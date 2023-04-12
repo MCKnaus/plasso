@@ -1,0 +1,13 @@
+Package: plasso
+Type: Package
+Title: Cross-validated (Post-) Lasso
+Version: 0.1.0
+Date: 2023-04-12
+Author: Michael C. Knaus, Stefan Glaisner
+Maintainer: Michael C. Knaus <michael.knaus@uni-tuebingen.de>
+Description: This code uses the glmnet package to estimate the coefficient paths and cross-validates least squares Lasso and Post-Lasso.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: glmnet
+RoxygenNote: 7.2.1
