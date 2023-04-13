@@ -2,7 +2,7 @@
 % Please edit documentation in R/plasso.R
 \name{summary.plasso}
 \alias{summary.plasso}
-\title{Summary of Post-Lasso model}
+\title{Summary of (Post-) Lasso model}
 \usage{
 \method{summary}{plasso}(plasso)
 }
@@ -13,5 +13,5 @@
 Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
 }
 \description{
-Summary of Post-Lasso model
+Summary of (Post-) Lasso model.
 }

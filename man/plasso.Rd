@@ -2,26 +2,24 @@
 % Please edit documentation in R/plasso.R
 \name{plasso}
 \alias{plasso}
-\title{This function uses the \code{\link{glmnet}} package to estimate the coefficient paths
-and cross-validates least squares Lasso AND Post-Lasso}
+\title{Cross-validated Lasso and Post-Lasso}
 \usage{
 plasso(x, y, w = NULL, kf = 10, ...)
 }
 \arguments{
 \item{x}{Matrix of covariates (number of observations times number of covariates matrix)}
 
-\item{y}{vector of outcomes}
+\item{y}{Vector of outcomes}
 
-\item{w}{vector of weights}
+\item{w}{Vector of weights}
 
-\item{kf}{number of folds in k-fold CV}
+\item{kf}{Number of folds in k-fold CV}
 
 \item{...}{Pass \code{\link{glmnet}} options}
 }
 \value{
-List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso
+List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
 }
 \description{
-This function uses the \code{\link{glmnet}} package to estimate the coefficient paths
-and cross-validates least squares Lasso AND Post-Lasso
+\emph{plasso()} uses the \code{\link{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
 }

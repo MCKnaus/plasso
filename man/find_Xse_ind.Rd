@@ -2,7 +2,7 @@
 % Please edit documentation in R/plasso.R
 \name{find_Xse_ind}
 \alias{find_Xse_ind}
-\title{Helper function finds the position for pre-specified SE rules}
+\title{Helper function to find the position for pre-specified SE rules}
 \usage{
 find_Xse_ind(CV, ind_min, oneSE, factor)
 }
@@ -16,9 +16,9 @@ find_Xse_ind(CV, ind_min, oneSE, factor)
 \item{factor}{Factor in which direction to go. Negative smaller model, positive larger model}
 }
 \value{
-Index on the Lambda grid
+Index on the Lambda grid.
 }
 \description{
-Helper function finds the position for pre-specified SE rules
+\emph{find_Xse_ind()} is a helper function that finds the position for pre-specified SE rules.
 }
 \keyword{internal}

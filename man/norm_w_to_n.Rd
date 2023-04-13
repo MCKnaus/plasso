@@ -2,19 +2,19 @@
 % Please edit documentation in R/plasso.R
 \name{norm_w_to_n}
 \alias{norm_w_to_n}
-\title{Function to normalize weights to N or to N in treated and controls separately}
+\title{Normalization of sample weights for potential sample weights}
 \usage{
 norm_w_to_n(w, d = NULL)
 }
 \arguments{
-\item{w}{vector of weights that should be normalized}
+\item{w}{Vector of weights that should be normalized}
 
-\item{d}{vector of treament indicators}
+\item{d}{Vector of treatment indicators}
 }
 \value{
-Normalized weights
+Normalized weights.
 }
 \description{
-Function to normalize weights to N or to N in treated and controls separately
+\emph{norm_w_to_n()} normalizes weights either to N or to N in treated and controls separately.
 }
 \keyword{internal}

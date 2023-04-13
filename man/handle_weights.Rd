@@ -9,12 +9,12 @@ handle_weights(w, n)
 \arguments{
 \item{w}{Vector of weights or null if no weights provided}
 
-\item{n}{number of observations}
+\item{n}{Number of observations}
 }
 \value{
-Vector of weights
+Vector of weights.
 }
 \description{
-Sanitizes potential sample weights
+\emph{handle_weights()} cleans potential sample weights or codes them as ones if they are not specified.
 }
 \keyword{internal}

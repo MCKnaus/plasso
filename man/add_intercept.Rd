@@ -10,9 +10,9 @@ add_intercept(mat)
 \item{mat}{Any matrix}
 }
 \value{
-Matrix with intercept
+Matrix with intercept.
 }
 \description{
-Adds an intercept to a matrix
+\emph{add_intercept()} adds an intercept to a matrix.
 }
 \keyword{internal}

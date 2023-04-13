@@ -2,31 +2,31 @@
 % Please edit documentation in R/plasso.R
 \name{CV_core}
 \alias{CV_core}
-\title{This function contains the core parts of the CV for Lasso and Post-Lasso}
+\title{Core part for (Post-) Lasso cross-validation}
 \usage{
 CV_core(x, y, w, cvgroup, list, i, lambda, ...)
 }
 \arguments{
-\item{x}{covariate matrix to be used in CV}
+\item{x}{Covariate matrix to be used in CV}
 
-\item{y}{vector of outcomes}
+\item{y}{Vector of outcomes}
 
-\item{w}{vector of weight}
+\item{w}{Vector of weight}
 
-\item{cvgroup}{categorical with k groups to identify folds}
+\item{cvgroup}{Categorical with k groups to identify folds}
 
-\item{list}{list 1:k}
+\item{list}{List 1:k}
 
-\item{i}{number of fold that is used for prediction}
+\item{i}{Number of fold that is used for prediction}
 
-\item{lambda}{series of lambdas used}
+\item{lambda}{Series of lambdas used}
 
 \item{...}{Pass \code{\link{glmnet}} options}
 }
 \value{
-MSE_lasso / MSE_plasso: means squared errors for each lambda
+MSE_lasso / MSE_plasso: means squared errors for each lambda.
 }
 \description{
-This function contains the core parts of the CV for Lasso and Post-Lasso
+\emph{CV_core()} ccontains the core parts of the CV for Lasso and Post-Lasso.
 }
 \keyword{internal}

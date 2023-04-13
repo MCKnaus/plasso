@@ -2,10 +2,7 @@
 % Please edit documentation in R/plasso.R
 \name{fitted_values}
 \alias{fitted_values}
-\title{This helper function extracts a subset of active variables (nm_act) of the
-relavant variables from X'X and X'y to get out-of-sample predictions
-for a matrix containing only the active variables
-This speeds up the cross-validation for post-Lasso to a large extent}
+\title{Fitted values for a subset of active variables}
 \usage{
 fitted_values(XtX_all, Xty_all, x_pred, nm_act)
 }
@@ -16,15 +13,15 @@ fitted_values(XtX_all, Xty_all, x_pred, nm_act)
 
 \item{x_pred}{Covariates matrix of the PREDICTION sample}
 
-\item{nm_act}{names of active variables}
+\item{nm_act}{Names of active variables}
 }
 \value{
-Fitted values in the prediction sample
+Fitted values in the prediction sample.
 }
 \description{
-This helper function extracts a subset of active variables (nm_act) of the
-relavant variables from X'X and X'y to get out-of-sample predictions
-for a matrix containing only the active variables
-This speeds up the cross-validation for post-Lasso to a large extent
+\emph{fitted_values()} extracts a subset of active variables (nm_act) of the
+relevant variables from X'X and X'y to get out-of-sample predictions
+for a matrix containing only the active variables.
+This speeds up the cross-validation for Post-Lasso to a large extent.
 }
 \keyword{internal}

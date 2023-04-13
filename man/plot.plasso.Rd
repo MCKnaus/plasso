@@ -2,7 +2,7 @@
 % Please edit documentation in R/plasso.R
 \name{plot.plasso}
 \alias{plot.plasso}
-\title{Plot of cross-validation curves.}
+\title{Plot of cross-validation curves}
 \usage{
 \method{plot}{plasso}(plasso)
 }

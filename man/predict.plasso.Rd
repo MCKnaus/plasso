@@ -2,7 +2,7 @@
 % Please edit documentation in R/plasso.R
 \name{predict.plasso}
 \alias{predict.plasso}
-\title{Predict after Post-Lasso.}
+\title{Predict after (Post-) Lasso}
 \usage{
 \method{predict}{plasso}(plasso, xnew = NULL, se_rule = 0, weights = FALSE)
 }
@@ -18,5 +18,5 @@ models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in th
 \item{weights}{If TRUE, weights underlying the prediction for xnew calculated}
 }
 \description{
-Predict after Post-Lasso.
+Prediction after (Post-) Lasso.
 }

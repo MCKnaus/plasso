@@ -1,14 +1,16 @@
-#' This function uses the \code{\link{glmnet}} package to estimate the coefficient paths
-#' and cross-validates least squares Lasso AND Post-Lasso
+#' Cross-validated Lasso and Post-Lasso
+#' 
+#' @description
+#' \emph{plasso()} uses the \code{\link{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
 #'
 #' @param x Matrix of covariates (number of observations times number of covariates matrix)
-#' @param y vector of outcomes
-#' @param w vector of weights
-#' @param kf number of folds in k-fold CV
+#' @param y Vector of outcomes
+#' @param w Vector of weights
+#' @param kf Number of folds in k-fold CV
 #' @param ... Pass \code{\link{glmnet}} options
 #' @import glmnet
 #'
-#' @return List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso
+#' @return List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
 #'
 #' @export
 #'
@@ -34,7 +36,7 @@ plasso = function(x,y,
   
   ## Figure out variables that were always inactive to drop them in CV
   # Figure out which coefficients are inactive at each Lasso grid
-  inact_coef_full = (coef_lasso_full == 0)         # boolean matrix
+  inact_coef_full = (coef_lasso_full == 0)             # Boolean matrix
   
   # Initialize matrices for MSE of Lasso and post-lasso for each grid point and CV fold
   cv_MSE_lasso = matrix(nrow = kf,ncol = length(lambda))
@@ -42,8 +44,8 @@ plasso = function(x,y,
   
   # Get indicator for CV samples
   split = stats::runif(nrow(x))
-  cvgroup = as.numeric(cut(split,stats::quantile(split, probs = seq(0,1,1/kf)),include.lowest = TRUE))  # groups for K-fold cv
-  list = 1:kf                            # Needed later in the loop to get the appropriate samples
+  cvgroup = as.numeric(cut(split,stats::quantile(split, probs = seq(0,1,1/kf)),include.lowest = TRUE))  # Groups for k-fold CV
+  list = 1:kf                                         # Needed later in the loop to get the appropriate samples
   
   
   ## Start loop for cross-validation of Lasso and Post-Lasso
@@ -90,7 +92,10 @@ plasso = function(x,y,
 }
 
 
-#' Predict after Post-Lasso.
+#' Predict after (Post-) Lasso
+#' 
+#' @description
+#' Prediction after (Post-) Lasso.
 #'
 #' @param plasso \code{\link{plasso}} object
 #' @param xnew Matrix of new values for x at which predictions are to be made
@@ -137,7 +142,10 @@ predict.plasso = function(plasso,
 }
 
 
-#' Summary of Post-Lasso model
+#' Summary of (Post-) Lasso model
+#' 
+#' @description
+#' Summary of (Post-) Lasso model.
 #'
 #' @param plasso \code{\link{plasso}} object
 #'
@@ -159,8 +167,11 @@ summary.plasso = function(plasso) {
 }
 
 
+#' Plot of cross-validation curves
+#' 
+#' @description
 #' Plot of cross-validation curves.
-#'
+#' 
 #' @param plasso \code{\link{plasso}} object
 #'
 #' @export
@@ -212,17 +223,21 @@ plot.plasso = function(plasso) {
 }
 
 
-#' This function contains the core parts of the CV for Lasso and Post-Lasso
-#' @param x covariate matrix to be used in CV
-#' @param y vector of outcomes
-#' @param w vector of weight
-#' @param cvgroup categorical with k groups to identify folds
-#' @param list list 1:k
-#' @param i number of fold that is used for prediction
-#' @param lambda series of lambdas used
+#' Core part for (Post-) Lasso cross-validation
+#' 
+#' @description
+#' \emph{CV_core()} ccontains the core parts of the CV for Lasso and Post-Lasso.
+#' 
+#' @param x Covariate matrix to be used in CV
+#' @param y Vector of outcomes
+#' @param w Vector of weight
+#' @param cvgroup Categorical with k groups to identify folds
+#' @param list List 1:k
+#' @param i Number of fold that is used for prediction
+#' @param lambda Series of lambdas used
 #' @param ... Pass \code{\link{glmnet}} options
 #'
-#' @return MSE_lasso / MSE_plasso: means squared errors for each lambda
+#' @return MSE_lasso / MSE_plasso: means squared errors for each lambda.
 #'
 #' @keywords internal
 #'
@@ -346,19 +361,20 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
 }
 
 
-
-
-#' This helper function extracts a subset of active variables (nm_act) of the
-#' relavant variables from X'X and X'y to get out-of-sample predictions
-#' for a matrix containing only the active variables
-#' This speeds up the cross-validation for post-Lasso to a large extent
+#' Fitted values for a subset of active variables
+#' 
+#' @description
+#' \emph{fitted_values()} extracts a subset of active variables (nm_act) of the
+#' relevant variables from X'X and X'y to get out-of-sample predictions
+#' for a matrix containing only the active variables.
+#' This speeds up the cross-validation for Post-Lasso to a large extent.
 #'
 #' @param XtX_all Crossproduct of all covariates
 #' @param Xty_all Crossproduct of covariates and outcome
 #' @param x_pred Covariates matrix of the PREDICTION sample
-#' @param nm_act names of active variables
+#' @param nm_act Names of active variables
 #'
-#' @return Fitted values in the prediction sample
+#' @return Fitted values in the prediction sample.
 #'
 #' @keywords internal
 #'
@@ -380,19 +396,22 @@ fitted_values = function (XtX_all,Xty_all,x_pred,nm_act) {
 }
 
 
-#' Function to normalize weights to N or to N in treated and controls separately
-#' @param w vector of weights that should be normalized
-#' @param d vector of treament indicators
+#' Normalization of sample weights for potential sample weights
+#' 
+#' @description
+#' \emph{norm_w_to_n()} normalizes weights either to N or to N in treated and controls separately.
+#' 
+#' @param w Vector of weights that should be normalized
+#' @param d Vector of treatment indicators
 #'
-#' @return Normalized weights
+#' @return Normalized weights.
 #'
 #' @keywords internal
 #'
 norm_w_to_n = function(w,d=NULL) {
-  
   if (is.null(d)) {
     ## Normalize weights to sum up to N
-    w = w / sum(w)* nrow(w)
+    w = w / sum(w) * nrow(w)
   } else {
     # Separate weights of treated and controls
     w1 = w * d
@@ -407,14 +426,17 @@ norm_w_to_n = function(w,d=NULL) {
 }
 
 
-#' Helper function finds the position for pre-specified SE rules
+#' Helper function to find the position for pre-specified SE rules
+#' 
+#' @description
+#' \emph{find_Xse_ind()} is a helper function that finds the position for pre-specified SE rules.
 #'
 #' @param CV Vector of cross-validated criterion
 #' @param ind_min Index of cross-validated minimum
 #' @param oneSE Standard error of cross-validated criterion at the minimum
 #' @param factor Factor in which direction to go. Negative smaller model, positive larger model
 #'
-#' @return Index on the Lambda grid
+#' @return Index on the Lambda grid.
 #'
 #' @keywords internal
 #'
@@ -438,9 +460,14 @@ find_Xse_ind = function(CV,ind_min,oneSE,factor) {
 
 
 #' Adds an intercept to a matrix
+#' 
+#' @description
+#' \emph{add_intercept()} adds an intercept to a matrix.
+#' 
 #' @param mat Any matrix
 #'
-#' @return Matrix with intercept
+#' @return Matrix with intercept.
+#' 
 #' @keywords internal
 #'
 add_intercept = function(mat) {
@@ -452,23 +479,28 @@ add_intercept = function(mat) {
 
 
 #' Sanitizes potential sample weights
+#' 
+#' @description
+#' \emph{handle_weights()} cleans potential sample weights or codes them as ones if they are not specified.
+#' 
 #' @param w Vector of weights or null if no weights provided
-#' @param n number of observations
+#' @param n Number of observations
 #'
-#' @return Vector of weights
+#' @return Vector of weights.
 #'
 #' @keywords internal
 #'
 handle_weights = function(w,n) {
   # Create weights of ones if no weights are specified
   if (is.null(w)) {
-    w <- as.matrix(rep(1,n),nrow = n,ncol = 1)
+    w = as.matrix(rep(1,n),nrow = n,ncol = 1)
   } else {
-    w <- as.matrix(w,nrow = n,ncol = 1)
+    w = as.matrix(w,nrow = n,ncol = 1)
   }
-  colnames(w) <- "w"
+  colnames(w) = "w"
   
-  # Normalize the weights either to N
-  w <- norm_w_to_n(w)
+  # Normalize the weights
+  w = norm_w_to_n(w)
   return(w)
 }
+
