@@ -1,0 +1,59 @@
+% document class
+
+\documentclass[12pt]{article}
+
+
+% use packages
+
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage[ddmmyyyy]{datetime}
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+linkcolor=[RGB]{0,51,102},
+citecolor=[RGB]{0,51,102},
+urlcolor=[RGB]{74, 133, 150}
+}
+\usepackage[medium]{titlesec}
+\usepackage{geometry}
+
+
+% adjust settings
+
+\newgeometry{
+lmargin=2.5cm,
+rmargin=2.5cm,
+tmargin=2.5cm,
+bmargin=2.5cm
+}
+
+
+% configure title
+\title{\vspace{-2cm} plasso \\ Documentation}
+\author{Michael Knaus \\ Stefan Glaisner}
+\date{\today}
+\date{\today}
+
+
+ % document
+ 
+\begin{document}
+
+\maketitle
+
+This documentation of the \emph{plasso} function of the \emph{plasso} package provides a brief explanation of its functioning.
+
+\section{Ideas}
+- Subsetting with [] instead of subset function \\
+- Is \emph{\texttt{inact\_coef\_full}} actually used in the function. And does it make sense to exclude inactive variables?
+
+\section{Done}
+
+
+\section{Questions}
+- What is the License (in the DESCRIPTION File)?
+
+
+\end{document}
