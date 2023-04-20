@@ -13,7 +13,7 @@ find_Xse_ind(CV, ind_min, oneSE, factor)
 
 \item{oneSE}{Standard error of cross-validated criterion at the minimum}
 
-\item{factor}{Factor in which direction to go. Negative smaller model, positive larger model}
+\item{factor}{Factor in which direction to go: Negative values favor smaller models, positive values favor larger models}
 }
 \value{
 Index on the Lambda grid.

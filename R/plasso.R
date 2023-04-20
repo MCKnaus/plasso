@@ -8,7 +8,6 @@
 #' @param w Vector of weights
 #' @param kf Number of folds in k-fold CV
 #' @param ... Pass \code{\link{glmnet}} options
-#' @import glmnet
 #'
 #' @return List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
 #'
@@ -16,7 +15,8 @@
 #'
 plasso = function(x,y,
                   w=NULL,
-                  kf = 10,
+                  kf=10,
+                  parallel=FALSE,
                   ...) {
   
   # Handle potentially provided sample weights, otherwise create weight vector of ones
@@ -25,7 +25,8 @@ plasso = function(x,y,
   if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
   
   # Lasso with full estimation sample
-  lasso_full = glmnet(x,y,weights = as.vector(w),family="gaussian",...)
+  #lasso_full = glmnet::glmnet(x,y,weights = as.vector(w),family="gaussian",...)
+  lasso_full = glmnet::glmnet(x,y,weights = as.vector(w),family="gaussian")
   coef_lasso_full = coef(lasso_full)                   # Save coefficients to extract later the ones at the CV minima
   nm_coef_lasso_full = rownames(coef_lasso_full)[-1]   # Save variable names that were used and kick out intercept
   lambda = lasso_full$lambda                           # Save grid to use the same in cross-validation
@@ -38,24 +39,53 @@ plasso = function(x,y,
   # Figure out which coefficients are inactive at each Lasso grid
   inact_coef_full = (coef_lasso_full == 0)             # Boolean matrix
   
-  # Initialize matrices for MSE of Lasso and post-lasso for each grid point and CV fold
-  cv_MSE_lasso = matrix(nrow = kf,ncol = length(lambda))
-  cv_MSE_plasso = matrix(nrow = kf,ncol = length(lambda))
-  
   # Get indicator for CV samples
   split = stats::runif(nrow(x))
   cvgroup = as.numeric(cut(split,stats::quantile(split, probs = seq(0,1,1/kf)),include.lowest = TRUE))  # Groups for k-fold CV
   list = 1:kf                                         # Needed later in the loop to get the appropriate samples
   
-  
-  ## Start loop for cross-validation of Lasso and Post-Lasso
-  for (i in 1:kf) {
-    CV = CV_core(x,y,w,cvgroup,list,i,lambda,...)
+  if (parallel==FALSE) {
     
-    ## Extract MSE of Lasso and Post-Lasso
-    cv_MSE_lasso[i,] = CV$MSE_lasso
-    cv_MSE_plasso[i,] = CV$MSE_plasso
-  }       # end loop over folds
+    # Initialize matrices for MSE of Lasso and post-lasso for each grid point and CV fold
+    cv_MSE_lasso = matrix(nrow = kf,ncol = length(lambda))
+    cv_MSE_plasso = matrix(nrow = kf,ncol = length(lambda))
+    
+    ## Start loop for cross-validation of Lasso and Post-Lasso
+    for (i in 1:kf) {
+      #CV = CV_core(x,y,w,cvgroup,list,i,lambda,...)
+      CV = CV_core(x,y,w,cvgroup,list,i,lambda)
+      
+      ## Extract MSE of Lasso and Post-Lasso
+      cv_MSE_lasso[i,] = CV$MSE_lasso
+      cv_MSE_plasso[i,] = CV$MSE_plasso
+    }       # end loop over folds
+    
+  } else if (parallel==TRUE)  {
+    
+    n_cores <- min(parallel::detectCores(),kf)
+    
+    cl = parallel::makeCluster(n_cores, methods=FALSE)
+    doParallel::registerDoParallel(cl)
+    
+    para_res <- foreach::foreach(i = 1:kf, .combine="rbind", .inorder=FALSE) %dopar% {
+                           
+                           ## core CV program functionsxxx no. 9
+                           CV <- CV_core(x,y,w,cvgroup,list,i,lambda)
+                           
+                           ## Extract MSE of Lasso and Post-Lasso
+                           cv_MSE_lasso <- CV$MSE_lasso
+                           cv_MSE_post_lasso <- CV$MSE_plasso
+                           
+                           ## Matrices to be returned from cores
+                           return(list(as.matrix(cv_MSE_lasso),as.matrix(cv_MSE_post_lasso)))
+    }
+    stopCluster(cl)
+    
+    para_res <- as.matrix(do.call(cbind,para_res))
+    cv_MSE_lasso <- t(para_res[,1:kf])
+    cv_MSE_plasso <- t(para_res[,(kf+1):(2*kf)])
+    
+  }
   
   ## Calculate mean MSEs over all folds
   cv_MSE_lasso[is.na(cv_MSE_lasso)] = max(cv_MSE_lasso) # can happen if glmnet does not go over the full grid
@@ -68,7 +98,7 @@ plasso = function(x,y,
   ## Get grid position of minimum MSE
   ind_min_l = which.min(mean_MSE_lasso)
   ind_min_pl = which.min(mean_MSE_plasso)
-  # Get names at minima
+  # Get variable names at minima
   names_l = names(coef_lasso_full[,ind_min_l])[which(coef_lasso_full[,ind_min_l] != 0)]
   names_pl = names(coef_lasso_full[,ind_min_pl])[which(coef_lasso_full[,ind_min_pl] != 0)]
   
@@ -256,7 +286,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
   w_pred_cv = norm_w_to_n(w_pred_cv)
   
   # Estimate Lasso for this fold using the grid of the full sample
-  lasso_cv = glmnet(x_est_cv, y_est_cv,lambda = lambda,weights=as.vector(w_est_cv),
+  lasso_cv = glmnet::glmnet(x_est_cv, y_est_cv,lambda = lambda,weights=as.vector(w_est_cv),
                     family="gaussian",...)
   coef_lasso_cv = coef(lasso_cv)                                       # Save coefficients at each grid point
   
@@ -434,7 +464,7 @@ norm_w_to_n = function(w,d=NULL) {
 #' @param CV Vector of cross-validated criterion
 #' @param ind_min Index of cross-validated minimum
 #' @param oneSE Standard error of cross-validated criterion at the minimum
-#' @param factor Factor in which direction to go. Negative smaller model, positive larger model
+#' @param factor Factor in which direction to go: Negative values favor smaller models, positive values favor larger models
 #'
 #' @return Index on the Lambda grid.
 #'
