@@ -25,7 +25,7 @@ plasso = function(x,y,
   if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
   
   # Lasso with full estimation sample
-  lasso_full = glmnet(x,y,weights = as.vector(w),family="gaussian",...)
+  lasso_full = glmnet(x,y,weights=as.vector(w),family="gaussian",...)
   coef_lasso_full = coef(lasso_full)                   # Save coefficients to extract later the ones at the CV minima
   nm_coef_lasso_full = rownames(coef_lasso_full)[-1]   # Save variable names that were used and kick out intercept
   lambda = lasso_full$lambda                           # Save grid to use the same in cross-validation
@@ -35,12 +35,12 @@ plasso = function(x,y,
   ###################################################
   
   # Initialize matrices for MSE of Lasso and post-lasso for each grid point and CV fold
-  cv_MSE_lasso = matrix(nrow = kf,ncol = length(lambda))
-  cv_MSE_plasso = matrix(nrow = kf,ncol = length(lambda))
+  cv_MSE_lasso = matrix(nrow=kf,ncol=length(lambda))
+  cv_MSE_plasso = matrix(nrow=kf,ncol=length(lambda))
   
   # Get indicator for CV samples
   split = stats::runif(nrow(x))
-  cvgroup = as.numeric(cut(split,stats::quantile(split, probs = seq(0,1,1/kf)),include.lowest = TRUE))  # Groups for k-fold CV
+  cvgroup = as.numeric(cut(split,stats::quantile(split,probs=seq(0,1,1/kf)),include.lowest=TRUE))  # Groups for k-fold CV
   list = 1:kf                                         # Needed later in the loop to get the appropriate samples
   
   
@@ -74,11 +74,11 @@ plasso = function(x,y,
   ## Return names and coefficients
   output = list("lasso_full"=lasso_full,"kf"=kf,
                 "cv_MSE_lasso"=cv_MSE_lasso,"cv_MSE_plasso"=cv_MSE_plasso,
-                "mean_MSE_lasso" = mean_MSE_lasso, "mean_MSE_plasso" = mean_MSE_plasso,
-                "ind_min_l" = ind_min_l,"ind_min_pl" = ind_min_pl,
-                "lambda_min_l" = lambda[ind_min_l],"lambda_min_pl" = lambda[ind_min_pl],
-                "names_l" = names_l,"names_pl" = names_pl,
-                "coef_min_l" = coef_min_l,"coef_min_pl" = coef_min_pl,
+                "mean_MSE_lasso"=mean_MSE_lasso, "mean_MSE_plasso"=mean_MSE_plasso,
+                "ind_min_l"=ind_min_l,"ind_min_pl"=ind_min_pl,
+                "lambda_min_l"=lambda[ind_min_l],"lambda_min_pl"=lambda[ind_min_pl],
+                "names_l"=names_l,"names_pl"=names_pl,
+                "coef_min_l"=coef_min_l,"coef_min_pl"=coef_min_pl,
                 "x"=x,"y"=y)
   
   class(output) = "plasso"
@@ -112,8 +112,8 @@ predict.plasso = function(plasso,
   xnew = add_intercept(xnew)
   
   # Standard error of folds
-  oneSE_lasso = sqrt(apply(plasso$cv_MSE_lasso, 2, var)/plasso$kf)
-  oneSE_plasso = sqrt(apply(plasso$cv_MSE_plasso, 2, var)/plasso$kf)
+  oneSE_lasso = sqrt(apply(plasso$cv_MSE_lasso,2,var)/plasso$kf)
+  oneSE_plasso = sqrt(apply(plasso$cv_MSE_plasso,2,var)/plasso$kf)
   oneSE_lasso[is.na(oneSE_lasso)] = 0
   oneSE_plasso[is.na(oneSE_plasso)] = 0
   
@@ -149,8 +149,8 @@ predict.plasso = function(plasso,
 #'
 summary.plasso = function(plasso) {
   # Comparison of minimum MSE
-  cat("\n\n Minimum CV MSE Lasso:",toString(min(plasso$mean_MSE_lasso,na.rm = TRUE)))
-  cat("\n\n Minimum CV MSE Post-Lasso:",toString(min(plasso$mean_MSE_plasso,na.rm = TRUE)))
+  cat("\n\n Minimum CV MSE Lasso:",toString(min(plasso$mean_MSE_lasso,na.rm=TRUE)))
+  cat("\n\n Minimum CV MSE Post-Lasso:",toString(min(plasso$mean_MSE_plasso,na.rm=TRUE)))
   
   # Show names of active variables at respective minima
   cat("\n\n Active variables at CV minimum of Lasso: \n")
@@ -173,8 +173,8 @@ summary.plasso = function(plasso) {
 plot.plasso = function(plasso) {
   
   # Standard error of folds
-  oneSE_lasso = sqrt(apply(plasso$cv_MSE_lasso, 2, var)/plasso$kf)
-  oneSE_plasso = sqrt(apply(plasso$cv_MSE_plasso, 2, var)/plasso$kf)
+  oneSE_lasso = sqrt(apply(plasso$cv_MSE_lasso,2,var)/plasso$kf)
+  oneSE_plasso = sqrt(apply(plasso$cv_MSE_plasso,2,var)/plasso$kf)
   oneSE_lasso[is.na(oneSE_lasso)] = 0
   oneSE_plasso[is.na(oneSE_plasso)] = 0
   
@@ -202,18 +202,18 @@ plot.plasso = function(plasso) {
   graphics::lines(log(plasso$lasso_full$lambda),plasso_1se_low,lty=2,lwd=1,col="red")
   
   # Show location of minima
-  graphics::abline(v = log(plasso$lambda_min_l), lty = 1, col="blue")
-  graphics::abline(v = log(plasso$lambda_min_pl), lty = 1, col="red")
+  graphics::abline(v=log(plasso$lambda_min_l),lty = 1,col="blue")
+  graphics::abline(v=log(plasso$lambda_min_pl),lty = 1,col="red")
   
   # Print legend
-  graphics::legend('top',c("Lasso MSE","Lasso MSE+-1SE","Post-Lasso MSE","Post-Lasso MSE+-1SE","# active coeff."), lty = c(1,2,1,2,1),
+  graphics::legend('top',c("Lasso MSE","Lasso MSE+-1SE","Post-Lasso MSE","Post-Lasso MSE+-1SE","# active coeff."),lty=c(1,2,1,2,1),
                    col=c('blue','blue','red','red','forestgreen'),ncol=1,bty ="n",cex=0.7)
   
   # Open a new graph for number of coefficients to be written on existing
-  graphics::par(new = TRUE)
-  graphics::plot(log(plasso$lasso_full$lambda),plasso$lasso_full$df, axes=F, xlab=NA, ylab=NA, cex=1.2,type="l",col="forestgreen",lwd=1.5)
-  graphics::axis(side = 4)
-  graphics::mtext(side = 4, line = 3, "# active coefficients")
+  graphics::par(new=TRUE)
+  graphics::plot(log(plasso$lasso_full$lambda),plasso$lasso_full$df,axes=F,xlab=NA,ylab=NA,cex=1.2,type="l",col="forestgreen",lwd=1.5)
+  graphics::axis(side=4)
+  graphics::mtext(side=4, line=3, "# active coefficients")
 }
 
 
@@ -250,7 +250,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
   w_pred_cv = norm_w_to_n(as.matrix(w_pred_cv))
   
   # Estimate Lasso for this fold using the grid of the full sample
-  lasso_cv = glmnet(x_est_cv,y_est_cv,lambda = lambda,weights=as.vector(w_est_cv),
+  lasso_cv = glmnet(x_est_cv,y_est_cv,lambda=lambda,weights=as.vector(w_est_cv),
                     family="gaussian",...)
   coef_lasso_cv = coef(lasso_cv)                                       # Save coefficients at each grid point
   
@@ -305,11 +305,11 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
     for (j in 1:length(lambda)) {
       # Get names of active variables at this grid
       nm_act_coef = rownames(act_coef)[act_coef[,j]]
-      if (identical(nm_act_coef,character(0))==TRUE) {
+      if (identical(nm_act_coef,character(0)) == TRUE) {
         # print("No variable selected at this grid => no prediction")
         next
       }
-      if (identical(nm_act_coef,nm_act_coef_prev) == TRUE & j>1) {
+      if (identical(nm_act_coef,nm_act_coef_prev) == TRUE & j > 1) {
         # print("Same variables selected as in previous grid => Post-Lasso predictions remain unchanged")
         fit_plasso[,j] = fit_plasso[,(j-1)]
         next
@@ -320,11 +320,11 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
       
       # Get OLS Post-Lasso predictions for this grid point
       fit = fitted_values(XtX_all,Xty_all,x_ols_pred,nm_act_coef)
-      if (is.null(fit) & j==1) {
+      if (is.null(fit) & j == 1) {
         fit_plasso[,j] = rep(mean(y),nrow(fit_plasso))
         next
       }
-      if (is.null(fit) & j>1) {
+      if (is.null(fit) & j > 1) {
         # cat("\n X'X not invertible at grid",toString(j),": Use last feasible coefficients")
         fit_plasso[,j] = fit_plasso[,(j-1)]
         next
@@ -339,7 +339,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
   } # end if at least one var selected
   
   # Matrix with "real" outcome values for each grid
-  y_rep = matrix(rep(y_pred_cv,length(lambda)),nrow = nrow(fit_lasso),ncol = ncol(fit_lasso))
+  y_rep = matrix(rep(y_pred_cv,length(lambda)),nrow=nrow(fit_lasso),ncol=ncol(fit_lasso))
   
   # Get RMSE
   SE_lasso = (y_rep - fit_lasso)^2
@@ -486,9 +486,9 @@ add_intercept = function(mat) {
 handle_weights = function(w,n) {
   # Create weights of ones if no weights are specified
   if (is.null(w)) {
-    w = as.matrix(rep(1,n),nrow = n,ncol = 1)
+    w = as.matrix(rep(1,n),nrow=n,ncol=1)
   } else {
-    w = as.matrix(w,nrow = n,ncol = 1)
+    w = as.matrix(w,nrow=n,ncol=1)
   }
   colnames(w) = "w"
   
