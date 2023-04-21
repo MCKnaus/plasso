@@ -11,7 +11,7 @@ find_Xse_ind(CV, ind_min, oneSE, factor)
 
 \item{ind_min}{Index of cross-validated minimum}
 
-\item{oneSE}{Standard error of cross-validated criterion at the minimum}
+\item{oneSE}{Vector that contains the standard errors of the cross-validated criterion for the whole grid}
 
 \item{factor}{Factor in which direction to go. Negative smaller model, positive larger model}
 }

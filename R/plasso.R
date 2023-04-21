@@ -34,10 +34,6 @@ plasso = function(x,y,
   ### Cross-validation with Lasso and Post Lasso ####
   ###################################################
   
-  ## Figure out variables that were always inactive to drop them in CV
-  # Figure out which coefficients are inactive at each Lasso grid
-  inact_coef_full = (coef_lasso_full == 0)             # Boolean matrix
-  
   # Initialize matrices for MSE of Lasso and post-lasso for each grid point and CV fold
   cv_MSE_lasso = matrix(nrow = kf,ncol = length(lambda))
   cv_MSE_plasso = matrix(nrow = kf,ncol = length(lambda))
@@ -62,8 +58,6 @@ plasso = function(x,y,
   cv_MSE_plasso[is.na(cv_MSE_plasso)] = max(cv_MSE_plasso) # and/or Post-Lasso has not full rank
   mean_MSE_lasso = colMeans(cv_MSE_lasso)
   mean_MSE_plasso = colMeans(cv_MSE_plasso)
-  mean_MSE_lasso[is.na(mean_MSE_lasso)] = max(mean_MSE_lasso,na.rm=T) + 1e-7 # can happen if glmnet does not go over the full grid
-  mean_MSE_plasso[is.na(mean_MSE_plasso)] = max(mean_MSE_plasso,na.rm=T) + 1e-7 # and/or Post-Lasso has not full rank
   
   ## Get grid position of minimum MSE
   ind_min_l = which.min(mean_MSE_lasso)
@@ -244,19 +238,19 @@ plot.plasso = function(plasso) {
 CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
   
   # Get estimation and prediction sample for this specific fold
-  x_est_cv = subset(x,cvgroup %in% list[-i])
-  y_est_cv = subset(y,cvgroup %in% list[-i])
-  w_est_cv = subset(w,cvgroup %in% list[-i])
-  x_pred_cv = subset(x,cvgroup %in% list[i])
-  y_pred_cv = subset(y,cvgroup %in% list[i])
-  w_pred_cv = subset(w,cvgroup %in% list[i])
+  x_est_cv = x[cvgroup %in% list[-i],]
+  y_est_cv = y[cvgroup %in% list[-i]]
+  w_est_cv = w[cvgroup %in% list[-i],]
+  x_pred_cv = x[cvgroup == list[i],]
+  y_pred_cv = y[cvgroup == list[i]]
+  w_pred_cv = w[cvgroup == list[i],]
   
   # Normalize the weights to N
   w_est_cv = norm_w_to_n(w_est_cv)
   w_pred_cv = norm_w_to_n(w_pred_cv)
   
   # Estimate Lasso for this fold using the grid of the full sample
-  lasso_cv = glmnet(x_est_cv, y_est_cv,lambda = lambda,weights=as.vector(w_est_cv),
+  lasso_cv = glmnet(x_est_cv,y_est_cv,lambda = lambda,weights=as.vector(w_est_cv),
                     family="gaussian",...)
   coef_lasso_cv = coef(lasso_cv)                                       # Save coefficients at each grid point
   
@@ -327,7 +321,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
       # Get OLS Post-Lasso predictions for this grid point
       fit = fitted_values(XtX_all,Xty_all,x_ols_pred,nm_act_coef)
       if (is.null(fit) & j==1) {
-        fit_plasso[,j] = rep(mean(y == 1),nrow(fit_plasso))
+        fit_plasso[,j] = rep(mean(y),nrow(fit_plasso))
         next
       }
       if (is.null(fit) & j>1) {
@@ -433,7 +427,7 @@ norm_w_to_n = function(w,d=NULL) {
 #'
 #' @param CV Vector of cross-validated criterion
 #' @param ind_min Index of cross-validated minimum
-#' @param oneSE Standard error of cross-validated criterion at the minimum
+#' @param oneSE Vector that contains the standard errors of the cross-validated criterion for the whole grid
 #' @param factor Factor in which direction to go. Negative smaller model, positive larger model
 #'
 #' @return Index on the Lambda grid.
@@ -448,7 +442,7 @@ find_Xse_ind = function(CV,ind_min,oneSE,factor) {
       if (cv_temp[i] < 0) next
       else if (cv_temp[i] > 0) break
     }
-  } else if (factor < 0) {
+  } else if (factor > 0) {
     for (i in ind_min:length(oneSE)) {
       ind = i
       if (cv_temp[i] < 0) next
