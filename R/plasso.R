@@ -82,7 +82,7 @@ plasso = function(x,y,
                 "x"=x,"y"=y)
   
   class(output) = "plasso"
-  output
+  return(output)
 }
 
 
@@ -132,7 +132,7 @@ predict.plasso = function(plasso,
   fit_plasso = hat_mat %*% plasso$y
   if (weights==FALSE) hat_mat = NULL
   
-  list("lasso"=fit_lasso,"plasso"=fit_plasso,"weights"=hat_mat)
+  return(list("lasso"=fit_lasso,"plasso"=fit_plasso,"weights"=hat_mat))
 }
 
 
@@ -276,10 +276,10 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
     fit_plasso = fit_lasso
   } else {
     ## Create the covariate matrix to "manually" calculate the fitted values (much faster than the build in lm command)
-    if (sum(abs(coef_lasso_cv[1,]))==0) {   # Indicates that no intercept was used
+    if (sum(abs(coef_lasso_cv[1,])) == 0) {   # Indicates that no intercept was used
       x_all_act = x_est_cv[,nm_all_act_coef]
     }
-    else if (sum(abs(coef_lasso_cv[1,]))!=0) {    # Indicates that intercept was used
+    else if (sum(abs(coef_lasso_cv[1,])) != 0) {    # Indicates that intercept was used
       x_all_act = add_intercept(x_est_cv[,nm_all_act_coef[2:length(nm_all_act_coef)],drop=F])
       colnames(x_all_act)[1] = "(Intercept)"
       # add intercept also to prediction sample
@@ -351,7 +351,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
   MSE_lasso = apply(SE_lasso,2,mean)
   MSE_plasso = apply(SE_plasso,2,mean)
   
-  list("MSE_lasso" = MSE_lasso,"MSE_plasso" = MSE_plasso)
+  return(list("MSE_lasso" = MSE_lasso,"MSE_plasso" = MSE_plasso))
 }
 
 

@@ -9,6 +9,7 @@
 \usepackage{hyperref}
 \usepackage[ddmmyyyy]{datetime}
 \usepackage{color}
+\usepackage{xcolor}
 \usepackage{hyperref}
 \hypersetup{
 colorlinks=true,
@@ -18,6 +19,7 @@ urlcolor=[RGB]{74, 133, 150}
 }
 \usepackage[medium]{titlesec}
 \usepackage{geometry}
+\usepackage{xurl}
 
 
 % adjust settings
@@ -46,14 +48,31 @@ bmargin=2.5cm
 This documentation of the \emph{plasso} function of the \emph{plasso} package provides a brief explanation of its functioning.
 
 \section{Ideas}
-- Subsetting with [] instead of subset function \\
-- Is \emph{\texttt{inact\_coef\_full}} actually used in the function. And does it make sense to exclude inactive variables?
+
+\begin{itemize}
+    \item \textcolor{teal}{Subsetting with [] instead of subset function and == instead of in statement.}
+    \item \textcolor{teal}{Remove Second NA-cleaning (in mean MSE calculation).}
+    \item Define summary method without print statement. Additionally, define print method for summary object. (\url{https://github.com/SurajGupta/r-source/blob/master/src/library/base/R/summary.R}).
+    \item Adjust object to resemble glmnet output.
+    \item Adjust parallelization (Number of cores etc.).
+    \item \textcolor{teal}{Add return to all functions (for consistentcy and clarity)?}
+    \item \textcolor{teal}{Remove \emph{\texttt{inact\_coef\_full}}.}
+    \item \textcolor{teal}{Check if (in particular the predict method) outputs the Lasso coefficients at the minimum of Post-Lasso or the Post-Lasso coefficients?}
+    \item \textcolor{teal}{Adjust the following in the plasso-fitting process: (y == 1) to (y)?}
+    \item \textcolor{teal}{Adjust parameter definition: "@param oneSE Standard error of cross-validated criterion at the minimum" (it is a vector!).}
+    \item \textcolor{teal}{Adjust \emph{\texttt{find\_Xse\_ind}} function to have meaningful greater than and smaller than signs?}
+\end{itemize}
+
 
 \section{Done}
 
 
 \section{Questions}
-- What is the License (in the DESCRIPTION File)?
 
+\begin{itemize}
+    \item Do we want some text outputting ("verbose=TRUE") as in the old package version?
+    \item Which functions do we want to @export (for documentation)?
+    \item What is the weights argument in the predict output?
+\end{itemize}
 
 \end{document}
