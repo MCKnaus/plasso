@@ -18,7 +18,7 @@ plasso = function(x,y,
                   w=NULL,
                   kf = 10,
                   ...) {
-  
+
   # Handle potentially provided sample weights, otherwise create weight vector of ones
   w = handle_weights(w,nrow(x))
   # Create variable names if not provided
@@ -246,8 +246,8 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
   w_pred_cv = w[cvgroup == list[i],]
   
   # Normalize the weights to N
-  w_est_cv = norm_w_to_n(w_est_cv)
-  w_pred_cv = norm_w_to_n(w_pred_cv)
+  w_est_cv = norm_w_to_n(as.matrix(w_est_cv))
+  w_pred_cv = norm_w_to_n(as.matrix(w_pred_cv))
   
   # Estimate Lasso for this fold using the grid of the full sample
   lasso_cv = glmnet(x_est_cv,y_est_cv,lambda = lambda,weights=as.vector(w_est_cv),
@@ -373,7 +373,6 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
 #' @keywords internal
 #'
 fitted_values = function (XtX_all,Xty_all,x_pred,nm_act) {
-  
   # Extract relevant rows and columns
   XtX = XtX_all[nm_act,nm_act]
   Xty = Xty_all[nm_act,]
