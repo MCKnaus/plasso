@@ -53,7 +53,13 @@ This documentation of the \emph{plasso} function of the \emph{plasso} package pr
     \item \textcolor{teal}{Subsetting with [] instead of subset function and == instead of in statement.}
     \item \textcolor{teal}{Remove Second NA-cleaning (in mean MSE calculation).}
     \item Define summary method without print statement. Additionally, define print method for summary object. (\url{https://github.com/SurajGupta/r-source/blob/master/src/library/base/R/summary.R}).
-    \item Adjust object to resemble glmnet output.
+    \item Adapt to glmnet object style.
+    \begin{itemize}
+        \item No printing in .summary method. Instead: .print methods for .summary method and plasso output itself.
+        \item Similar information in plasso output as in glmnet output.
+        \item Different types and options for predict method (predictions, coefficients, lambda parameter?).
+        \item Which functions do we want to @export (for documentation)?
+    \end{itemize}
     \item Adjust parallelization (Number of cores etc.).
     \item \textcolor{teal}{Add return to all functions (for consistentcy and clarity)?}
     \item \textcolor{teal}{Remove \emph{\texttt{inact\_coef\_full}}.}
