@@ -9,6 +9,7 @@
 #' @param kf Number of folds in k-fold CV
 #' @param ... Pass \code{\link{glmnet}} options
 #' @import glmnet
+#' @importFrom stats coef predict var
 #'
 #' @return List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
 #'
@@ -19,6 +20,7 @@ plasso = function(x,y,
                   kf = 10,
                   ...) {
 
+  cl = match.call()
   # Handle potentially provided sample weights, otherwise create weight vector of ones
   w = handle_weights(w,nrow(x))
   # Create variable names if not provided
@@ -72,7 +74,8 @@ plasso = function(x,y,
   coef_min_pl = coef_lasso_full[,ind_min_pl][which(coef_lasso_full[,ind_min_pl] != 0)]
   
   ## Return names and coefficients
-  output = list("lasso_full"=lasso_full,"kf"=kf,
+  output = list("call"=cl,
+                "lasso_full"=lasso_full,"kf"=kf,
                 "cv_MSE_lasso"=cv_MSE_lasso,"cv_MSE_plasso"=cv_MSE_plasso,
                 "mean_MSE_lasso"=mean_MSE_lasso, "mean_MSE_plasso"=mean_MSE_plasso,
                 "ind_min_l"=ind_min_l,"ind_min_pl"=ind_min_pl,
@@ -83,6 +86,33 @@ plasso = function(x,y,
   
   class(output) = "plasso"
   return(output)
+}
+
+
+#' Print (Post-) Lasso model
+#' 
+#' @description
+#' Printing main insights from (Post-) Lasso model.
+#'
+#' @param plasso \code{\link{plasso}} object
+#' @param digits Integer, used for number formatting
+#' @param ... Pass generic R print options
+#'
+#' @return Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
+#'
+#' @export
+#'
+print.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) {
+  
+  cat("\nCall: ", deparse(plasso$call), "\n\n")
+  out = data.frame(Df=plasso$lasso_full$df,
+                   `%Dev`=round(plasso$lasso_full$dev.ratio*100, 2),
+                   Lambda=signif(plasso$lasso_full$lambda, digits),
+                   MSE_lasso=plasso$mean_MSE_lasso,
+                   MSE_plasso=plasso$mean_MSE_plasso,
+                   check.names=FALSE,row.names=seq(along=plasso$lasso_full$df))
+  class(out)=c("anova",class(out))
+  print(out)
 }
 
 
@@ -142,22 +172,67 @@ predict.plasso = function(plasso,
 #' Summary of (Post-) Lasso model.
 #'
 #' @param plasso \code{\link{plasso}} object
+#' @param default TRUE for glmnet-like summary output, FALSE for more specific summary information
+#' @param ... Pass generic R summary options
 #'
 #' @return Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
 #'
 #' @export
 #'
-summary.plasso = function(plasso) {
-  # Comparison of minimum MSE
-  cat("\n\n Minimum CV MSE Lasso:",toString(min(plasso$mean_MSE_lasso,na.rm=TRUE)))
-  cat("\n\n Minimum CV MSE Post-Lasso:",toString(min(plasso$mean_MSE_plasso,na.rm=TRUE)))
+summary.plasso = function(plasso, default=TRUE, ...) {
   
-  # Show names of active variables at respective minima
-  cat("\n\n Active variables at CV minimum of Lasso: \n")
-  print(names(coef(plasso$lasso_full)[,plasso$ind_min_l])[which(coef(plasso$lasso_full)[,plasso$ind_min_l] != 0)])
+  if (default) {
+    
+    return(summary.default(plasso, ...))
+    
+  } else {
   
-  cat("\n\n Active variables at CV minimum of Post-Lasso: \n")
-  print(names(coef(plasso$lasso_full)[,plasso$ind_min_pl])[which(coef(plasso$lasso_full)[,plasso$ind_min_pl] != 0)])
+    value = list(
+      call = plasso$call,
+      mean_MSE_lasso = plasso$mean_MSE_lasso,
+      mean_MSE_plasso = plasso$mean_MSE_plasso,
+      lasso_full = plasso$lasso_full,
+      ind_min_lasso = plasso$ind_min_l,
+      ind_min_plasso = plasso$ind_min_pl
+    )
+    class(value) <- "summary.plasso"
+    return(value)
+
+  }
+}
+
+
+#' Print summary of (Post-) Lasso model
+#'
+#' @description
+#' Prints summary information of plasso object
+#'
+#' @param object Summary of plasso object (either of class "summary.plasso' or "summaryDefault")
+#' @param digits Integer, used for number formatting
+#' @param ... Pass generic R print options
+#'
+#' @export
+#' 
+print.summary.plasso = function(object, digits=max(3L, getOption("digits") - 3L), ...) {
+  
+  if (class(object)[1] == 'summaryDefault') {
+    
+    print.summaryDefault(object, digits=digits, ...)
+    
+  } else if (class(object) == 'summary.plasso'){
+    
+    cat("\nCall:\n ", paste(deparse(object$call), sep="\n", collapse = "\n"), "\n\n", sep = "")
+    
+    cat("Lasso:\n Minimum CV MSE Lasso: ",toString(signif(min(object$mean_MSE_lasso,na.rm=TRUE),digits)))
+    cat("\n Lambda at minimum: ",toString(signif(object$lasso_full$lambda[object$ind_min_l],digits)))
+    cat("\n Active variables at minimum: ",names(coef(object$lasso_full)[,object$ind_min_l])[which(coef(object$lasso_full)[,object$ind_min_l] != 0)])
+    
+    cat("\nPost-Lasso:\n Minimum CV MSE Post-Lasso: ",toString(signif(min(object$mean_MSE_plasso,na.rm=TRUE),digits)))
+    cat("\n Lambda at minimum: ",toString(signif(object$lasso_full$lambda[object$ind_min_pl],digits)))
+    cat("\n Active variables at minimum: ",names(coef(object$lasso_full)[,object$ind_min_pl])[which(coef(object$lasso_full)[,object$ind_min_pl] != 0)])
+    
+  }
+  
 }
 
 

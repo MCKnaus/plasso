@@ -2,6 +2,11 @@
 
 S3method(plot,plasso)
 S3method(predict,plasso)
+S3method(print,plasso)
+S3method(print,summary.plasso)
 S3method(summary,plasso)
 export(plasso)
 import(glmnet)
+importFrom(stats,coef)
+importFrom(stats,predict)
+importFrom(stats,var)
