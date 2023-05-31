@@ -4,18 +4,29 @@
 \alias{predict.plasso}
 \title{Predict after (Post-) Lasso}
 \usage{
-\method{predict}{plasso}(plasso, xnew = NULL, se_rule = 0, weights = FALSE)
+\method{predict}{plasso}(
+  plasso,
+  xnew = NULL,
+  type = c("response", "coefficients"),
+  s = c("optimal", "all"),
+  weights = NULL,
+  se_rule = 0
+)
 }
 \arguments{
-\item{plasso}{\code{\link{plasso}} object}
+\item{plasso}{Fitted \code{\link{plasso}} model object}
 
-\item{xnew}{Matrix of new values for x at which predictions are to be made}
+\item{xnew}{Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".}
 
-\item{se_rule}{If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
+\item{type}{Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.}
+
+\item{s}{Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.}
+
+\item{weights}{Vector of weights. This argument is not used for default type="response".}
+
+\item{se_rule}{Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
 models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
-(e.g. se_rule=1 creates the standard 1SE+ rule)}
-
-\item{weights}{If TRUE, weights underlying the prediction for xnew calculated}
+(e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".}
 }
 \description{
 Prediction after (Post-) Lasso.

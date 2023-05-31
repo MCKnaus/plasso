@@ -121,50 +121,105 @@ print.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) {
 #' @description
 #' Prediction after (Post-) Lasso.
 #'
-#' @param plasso \code{\link{plasso}} object
-#' @param xnew Matrix of new values for x at which predictions are to be made
-#' @param se_rule If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
+#' @param plasso Fitted \code{\link{plasso}} model object
+#' @param xnew Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
+#' @param type Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.
+#' @param s Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.
+#' @param weights Vector of weights. This argument is not used for default type="response".
+#' @param se_rule Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
 #' models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
-#' (e.g. se_rule=1 creates the standard 1SE+ rule)
-#' @param weights If TRUE, weights underlying the prediction for xnew calculated
+#' (e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".
 #'
 #' @export
 #'
 predict.plasso = function(plasso,
                           xnew=NULL,
-                          se_rule=0,
-                          weights=FALSE) {
+                          type=c("response","coefficients"),
+                          s=c("optimal","all"),
+                          weights=NULL,
+                          se_rule=0) {
   
-  if (is.null(xnew)) xnew = plasso$x
-  x = add_intercept(plasso$x)
-  # Create variable names if not provided
-  if ( is.null( colnames(xnew) ) ) colnames(xnew) = sprintf("var%s",seq(1:ncol(xnew)))
-  xnew = add_intercept(xnew)
+  # Check if type and s is valid
+  type = match.arg(type)
+  s = match.arg(s)
   
-  # Standard error of folds
-  oneSE_lasso = sqrt(apply(plasso$cv_MSE_lasso,2,var)/plasso$kf)
-  oneSE_plasso = sqrt(apply(plasso$cv_MSE_plasso,2,var)/plasso$kf)
-  oneSE_lasso[is.na(oneSE_lasso)] = 0
-  oneSE_plasso[is.na(oneSE_plasso)] = 0
+  if (is.null(xnew)) x = plasso$x else x = xnew
+  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
+  x = add_intercept(x)
+  y = plasso$y
+  w = handle_weights(w,nrow(x))
   
-  # Find Lambda
-  ind_Xse_l = find_Xse_ind(plasso$mean_MSE_lasso,plasso$ind_min_l,oneSE_lasso,se_rule)
-  ind_Xse_pl = find_Xse_ind(plasso$mean_MSE_plasso,plasso$ind_min_pl,oneSE_plasso,se_rule)
-  
-  # Fitted values for lasso
-  fit_lasso = xnew %*% coef(plasso$lasso_full)[,ind_Xse_l]
-  
-  # Fitted values for post lasso
-  nm_act = names(coef(plasso$lasso_full)[,ind_Xse_pl])[which(coef(plasso$lasso_full)[,ind_Xse_pl] != 0)]
-  xact = x[,nm_act]
-  xactnew = xnew[,nm_act]
-  hat_mat = xactnew %*% solve(crossprod(xact)) %*% t(xact)
-  fit_plasso = hat_mat %*% plasso$y
-  if (weights==FALSE) hat_mat = NULL
-  
-  return(list("lasso"=fit_lasso,"plasso"=fit_plasso,"weights"=hat_mat))
-}
+  if (s == "optimal") {
+    
+    oneSE_lasso = sqrt(apply(plasso$cv_MSE_lasso,2,var)/plasso$kf)
+    oneSE_plasso = sqrt(apply(plasso$cv_MSE_plasso,2,var)/plasso$kf)
+    oneSE_lasso[is.na(oneSE_lasso)] = 0
+    oneSE_plasso[is.na(oneSE_plasso)] = 0
+    ind_Xse_l = find_Xse_ind(plasso$mean_MSE_lasso,plasso$ind_min_l,oneSE_lasso,se_rule)
+    ind_Xse_pl = find_Xse_ind(plasso$mean_MSE_plasso,plasso$ind_min_pl,oneSE_plasso,se_rule)
+    
+    if (type == "coefficients") {
+      
+      coef_lasso = coef(plasso$lasso_full)[,ind_Xse_l]
+      nm_act = names(coef(plasso$lasso_full)[,ind_Xse_pl])[which(coef(plasso$lasso_full)[,ind_Xse_pl] != 0)]
+      coef_plasso = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,ind_Xse_l])
+      
+      return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
+      
+    } else if (type == "response"){
+      
+      # Fitted values for lasso
+      fit_lasso = x %*% coef(plasso$lasso_full)[,ind_Xse_l]
+      
+      # Fitted values for post lasso
+      nm_act = names(coef(plasso$lasso_full)[,ind_Xse_pl])[which(coef(plasso$lasso_full)[,ind_Xse_pl] != 0)]
+      coef_plasso = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,ind_Xse_l])
+      fit_plasso = x %*% coef_plasso 
+      
+      return(list("lasso"=fit_lasso,"plasso"=fit_plasso))
+      
+    }
+    
+  } else if (s == "all"){
+    
+    l = length(plasso$lasso_full$lambda)
 
+    if (type == "coefficients") {
+      
+      coef_lasso = matrix(NA,nrow=l,ncol=ncol(x),dimnames=list(1:l,colnames(x)))
+      coef_plasso = matrix(NA,nrow=l,ncol=ncol(x),dimnames=list(1:l,colnames(x)))
+      
+      for (i in 1:l) {
+        coef_lasso[i,] = coef(plasso$lasso_full)[,i]
+        
+        nm_act = names(coef(plasso$lasso_full)[,i])[which(coef(plasso$lasso_full)[,i] != 0)]
+        coef_plasso[i,] = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,i])
+      }
+      colnames(coef_lasso) = colnames(x)
+      colnames(coef_plasso) = colnames(x)
+      
+      return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
+      
+    } else if (type == "response"){
+      
+      fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),1:l))
+      fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),1:l))
+      
+      for (i in 1:l) {
+        
+        fit_lasso[,i] = x %*% coef(plasso$lasso_full)[,i]
+        
+        nm_act = names(coef(plasso$lasso_full)[,i])[which(coef(plasso$lasso_full)[,i] != 0)]
+        coef_plasso = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,i])
+        fit_plasso[,i] = x %*% coef_plasso 
+      }
+      
+      return(list("lasso"=fit_lasso,"plasso"=fit_plasso))
+    
+    }
+  }
+}
+  
 
 #' Summary of (Post-) Lasso model
 #' 
@@ -215,11 +270,11 @@ summary.plasso = function(plasso, default=TRUE, ...) {
 #' 
 print.summary.plasso = function(object, digits=max(3L, getOption("digits") - 3L), ...) {
   
-  if (class(object)[1] == 'summaryDefault') {
+  if (inherits(object,'summaryDefault')) {
     
     print.summaryDefault(object, digits=digits, ...)
     
-  } else if (class(object) == 'summary.plasso'){
+  } else if (inherits(object,'summary.plasso')){
     
     cat("\nCall:\n ", paste(deparse(object$call), sep="\n", collapse = "\n"), "\n\n", sep = "")
     
@@ -394,7 +449,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
       }
       
       # Get OLS Post-Lasso predictions for this grid point
-      fit = fitted_values(XtX_all,Xty_all,x_ols_pred,nm_act_coef)
+      fit = fitted_values_cv(XtX_all,Xty_all,x_ols_pred,nm_act_coef)
       if (is.null(fit) & j == 1) {
         fit_plasso[,j] = rep(mean(y),nrow(fit_plasso))
         next
@@ -433,7 +488,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
 #' Fitted values for a subset of active variables
 #' 
 #' @description
-#' \emph{fitted_values()} extracts a subset of active variables (nm_act) of the
+#' \emph{fitted_values_cv()} extracts a subset of active variables (nm_act) of the
 #' relevant variables from X'X and X'y to get out-of-sample predictions
 #' for a matrix containing only the active variables.
 #' This speeds up the cross-validation for Post-Lasso to a large extent.
@@ -447,7 +502,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
 #'
 #' @keywords internal
 #'
-fitted_values = function (XtX_all,Xty_all,x_pred,nm_act) {
+fitted_values_cv = function (XtX_all,Xty_all,x_pred,nm_act) {
   # Extract relevant rows and columns
   XtX = XtX_all[nm_act,nm_act]
   Xty = Xty_all[nm_act,]
@@ -572,3 +627,37 @@ handle_weights = function(w,n) {
   return(w)
 }
 
+
+#' plasso fitting
+#' 
+#' @description
+#' \emph{fit_betas()} estimates OLS model only for active coefficients (from lasso)
+#' 
+#' @param x Matrix of covariates (number of observations times number of covariates matrix)
+#' @param y Vector of outcomes
+#' @param w Vector of weights
+#' @param nm_act Vector of active variables
+#' @param coef_lasso Vector of lasso coefficients
+#' 
+#' @return Beta estimates.
+#'
+#' @keywords internal
+#'
+fit_betas = function(x,y,w,nm_act,coef_lasso) {
+  if (length(nm_act) == 1){
+    xact = as.matrix(x[,nm_act])
+    XtX = crossprod(xact)
+    Xty = crossprod(xact,y)
+  } else {
+    xact = x[,nm_act]
+    xact_w = apply(xact,2,`*`,sqrt(w))
+    y_w = y * sqrt(w)
+    XtX = crossprod(xact_w)
+    Xty = crossprod(xact_w,y_w)
+  }
+  beta_plasso = solve(XtX, Xty)
+  beta_plasso = unlist(beta_plasso[,1])
+  coef_plasso = coef_lasso
+  coef_plasso[names(beta_plasso)] = beta_plasso
+  return(coef_plasso)
+}
