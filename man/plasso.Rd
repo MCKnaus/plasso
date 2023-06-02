@@ -4,7 +4,7 @@
 \alias{plasso}
 \title{Cross-validated Lasso and Post-Lasso}
 \usage{
-plasso(x, y, w = NULL, kf = 10, ...)
+plasso(x, y, w = NULL, kf = 10, parallel = FALSE, ...)
 }
 \arguments{
 \item{x}{Matrix of covariates (number of observations times number of covariates matrix)}
@@ -14,6 +14,8 @@ plasso(x, y, w = NULL, kf = 10, ...)
 \item{w}{Vector of weights}
 
 \item{kf}{Number of folds in k-fold CV}
+
+\item{parallel}{Set as FALSE for parallelized cross-validation}
 
 \item{...}{Pass \code{\link{glmnet}} options}
 }
