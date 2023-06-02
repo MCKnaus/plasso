@@ -9,7 +9,11 @@
 #' @param kf Number of folds in k-fold CV
 #' @param parallel Set as FALSE for parallelized cross-validation
 #' @param ... Pass \code{\link{glmnet}} options
+#' 
 #' @import glmnet
+#' @import parallel
+#' @import doParallel
+#' @import foreach
 #' @importFrom stats coef predict var
 #'
 #' @return List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
@@ -43,7 +47,7 @@ plasso = function(x,y,
   cvgroup = as.numeric(cut(split,stats::quantile(split,probs=seq(0,1,1/kf)),include.lowest=TRUE))  # Groups for k-fold CV
   list = 1:kf                                         # Needed later in the loop to get the appropriate samples
   
-  if (parallel==FALSE) {
+  if (!parallel) {
     
     # Initialize matrices for MSE of Lasso and post-lasso for each grid point and CV fold
     cv_MSE_lasso = matrix(nrow = kf,ncol = length(lambda))
@@ -59,9 +63,9 @@ plasso = function(x,y,
       cv_MSE_plasso[i,] = CV$MSE_plasso
     }       # end loop over folds
     
-  } else if (parallel==TRUE)  {
+  } else if (parallel)  {
     
-    n_cores <- min(parallel::detectCores(),kf)
+    n_cores <- min(parallel::detectCores()-1,kf)
     
     cl = parallel::makeCluster(n_cores, methods=FALSE)
     doParallel::registerDoParallel(cl)
@@ -78,7 +82,7 @@ plasso = function(x,y,
                            ## Matrices to be returned from cores
                            return(list(as.matrix(cv_MSE_lasso),as.matrix(cv_MSE_post_lasso)))
     }
-    stopCluster(cl)
+    parallel::stopCluster(cl)
     
     para_res <- as.matrix(do.call(cbind,para_res))
     cv_MSE_lasso <- t(para_res[,1:kf])

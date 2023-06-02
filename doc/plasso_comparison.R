@@ -54,7 +54,7 @@ for (i in 1:length(n_obs)) {
   for (j in 1:length(n_variables)){
     for (p in 1:length(para)){
       for (k in 1:length(kfolds)){
-        print(paste0("--- Simulation for n = ", n_obs[i], ", p = ", n_variables[j], ", parallel = ", para[p], " & kf = " ,kfolds[k]), " ---")
+        print(paste0("--- Simulation for n = ", n_obs[i], ", p = ", n_variables[j], ", parallel = ", para[p], " & kf = " ,kfolds[k], " ---"))
         comparison = rbind(comparison, simulate(n=n_obs[i],p=n_variables[j],parallel=para[p],kf=kfolds[k]))
       }
     }
@@ -63,7 +63,9 @@ for (i in 1:length(n_obs)) {
 
 comparison$N_P = paste0(as.character(comparison$N), "_", as.character(comparison$P))
 
-ggplot(comparison, aes(x = K,
+write.csv(comparison, "comparison.csv", row.names=FALSE)
+
+ggplot(comparison, aes(x = N_Folds,
                        y = Median_Time,
                        color = Parallel)) +
   geom_line(size = 0.8, alpha = 0.8) +
