@@ -7,6 +7,7 @@
 #' @param y Vector of outcomes
 #' @param w Vector of weights
 #' @param kf Number of folds in k-fold CV
+#' @param parallel Set as FALSE for parallelized cross-validation
 #' @param ... Pass \code{\link{glmnet}} options
 #'
 #' @return List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.

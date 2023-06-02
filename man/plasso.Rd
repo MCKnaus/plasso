@@ -15,6 +15,8 @@ plasso(x, y, w = NULL, kf = 10, parallel = FALSE, ...)
 
 \item{kf}{Number of folds in k-fold CV}
 
+\item{parallel}{Set as FALSE for parallelized cross-validation}
+
 \item{...}{Pass \code{\link{glmnet}} options}
 }
 \value{
