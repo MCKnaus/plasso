@@ -2,9 +2,9 @@
 % Please edit documentation in R/plasso.R
 \name{plasso}
 \alias{plasso}
-\title{Cross-validated Lasso and Post-Lasso}
+\title{Lasso and Post-Lasso}
 \usage{
-plasso(x, y, w = NULL, kf = 10, parallel = FALSE, ...)
+plasso(x, y, w = NULL, ...)
 }
 \arguments{
 \item{x}{Matrix of covariates (number of observations times number of covariates matrix)}
@@ -13,15 +13,12 @@ plasso(x, y, w = NULL, kf = 10, parallel = FALSE, ...)
 
 \item{w}{Vector of weights}
 
-\item{kf}{Number of folds in k-fold CV}
-
-\item{parallel}{Set as FALSE for parallelized cross-validation}
-
 \item{...}{Pass \code{\link{glmnet}} options}
 }
 \value{
-List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
+List including glmnet object and names of selected variables at cross-validated minima for Lasso and Post-Lasso.
 }
 \description{
-\emph{plasso()} uses the \code{\link{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
+\emph{plasso()} implicitly estimates a Lasso model using the \code{\link{glmnet}} package
+and additionally estimates coefficient paths for a subsequent Post-Lasso model.
 }

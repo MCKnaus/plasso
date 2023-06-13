@@ -11,9 +11,11 @@
 #' @param ... Pass \code{\link{glmnet}} options
 #' 
 #' @import glmnet
+#' @import Matrix
 #' @import parallel
 #' @import doParallel
 #' @import foreach
+#' @import iterators
 #' @importFrom stats coef predict var
 #'
 #' @return List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
@@ -26,7 +28,7 @@ cv.plasso = function(x,y,
                   parallel=FALSE,
                   ...) {
 
-  cl = match.call()
+  this.call = match.call()
   # Handle potentially provided sample weights, otherwise create weight vector of ones
   w = handle_weights(w,nrow(x))
   # Create variable names if not provided
@@ -35,7 +37,6 @@ cv.plasso = function(x,y,
   # Lasso with full estimation sample
   lasso_full = glmnet(x,y,weights=as.vector(w),family="gaussian",...)
   coef_lasso_full = coef(lasso_full)                   # Save coefficients to extract later the ones at the CV minima
-  nm_coef_lasso_full = rownames(coef_lasso_full)[-1]   # Save variable names that were used and kick out intercept
   lambda = lasso_full$lambda                           # Save grid to use the same in cross-validation
   
   # Get indicator for CV samples
@@ -85,26 +86,26 @@ cv.plasso = function(x,y,
     
   }
   
-  ## Calculate mean MSEs over all folds
+  # Calculate mean MSEs over all folds
   cv_MSE_lasso[is.na(cv_MSE_lasso)] = max(cv_MSE_lasso) # can happen if glmnet does not go over the full grid
   cv_MSE_plasso[is.na(cv_MSE_plasso)] = max(cv_MSE_plasso) # and/or Post-Lasso has not full rank
   mean_MSE_lasso = colMeans(cv_MSE_lasso)
   mean_MSE_plasso = colMeans(cv_MSE_plasso)
   
-  ## Get grid position of minimum MSE
+  # Get grid position of minimum MSE
   ind_min_l = which.min(mean_MSE_lasso)
   ind_min_pl = which.min(mean_MSE_plasso)
   # Get variable names at minima
   names_l = names(coef_lasso_full[,ind_min_l])[which(coef_lasso_full[,ind_min_l] != 0)]
   names_pl = names(coef_lasso_full[,ind_min_pl])[which(coef_lasso_full[,ind_min_pl] != 0)]
   
-  ## Get Lasso coefficients at minimum of Lasso
+  # Get Lasso coefficients at minimum of Lasso
   coef_min_l = coef_lasso_full[,ind_min_l][which(coef_lasso_full[,ind_min_l] != 0)]
-  ## Get Lasso coefficients at minimum of Post-Lasso
+  # Get Lasso coefficients at minimum of Post-Lasso
   coef_min_pl = coef_lasso_full[,ind_min_pl][which(coef_lasso_full[,ind_min_pl] != 0)]
   
-  ## Return names and coefficients
-  output = list("call"=cl,
+  # Return names and coefficients
+  output = list("call"=this.call,
                 "lasso_full"=lasso_full,"kf"=kf,
                 "cv_MSE_lasso"=cv_MSE_lasso,"cv_MSE_plasso"=cv_MSE_plasso,
                 "mean_MSE_lasso"=mean_MSE_lasso, "mean_MSE_plasso"=mean_MSE_plasso,
@@ -124,15 +125,17 @@ cv.plasso = function(x,y,
 #' @description
 #' Printing main insights from (Post-) Lasso model.
 #'
-#' @param plasso \code{\link{plasso}} object
+#' @param plasso \code{\link{cv.plasso}} object
 #' @param digits Integer, used for number formatting
 #' @param ... Pass generic R print options
 #'
 #' @return Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
+#' 
+#' @method print cv.plasso
 #'
 #' @export
 #'
-print.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) {
+print.cv.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) {
   
   cat("\nCall: ", deparse(plasso$call), "\n\n")
   out = data.frame(Df=plasso$lasso_full$df,
@@ -151,7 +154,7 @@ print.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) {
 #' @description
 #' Prediction after (Post-) Lasso.
 #'
-#' @param plasso Fitted \code{\link{plasso}} model object
+#' @param plasso Fitted \code{\link{cv.plasso}} model object
 #' @param xnew Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
 #' @param type Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.
 #' @param s Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.
@@ -160,14 +163,16 @@ print.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) {
 #' models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
 #' (e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".
 #'
+#' @method predict cv.plasso
+#'
 #' @export
 #'
-predict.plasso = function(plasso,
-                          xnew=NULL,
-                          type=c("response","coefficients"),
-                          s=c("optimal","all"),
-                          weights=NULL,
-                          se_rule=0) {
+predict.cv.plasso = function(cv.plasso,
+                             xnew=NULL,
+                             type=c("response","coefficients"),
+                             s=c("optimal","all"),
+                             weights=NULL,
+                             se_rule=0) {
   
   # Check if type and s is valid
   type = match.arg(type)
@@ -261,10 +266,12 @@ predict.plasso = function(plasso,
 #' @param ... Pass generic R summary options
 #'
 #' @return Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
+#' 
+#' @method summary cv.plasso
 #'
 #' @export
 #'
-summary.plasso = function(plasso, default=TRUE, ...) {
+summary.cv.plasso = function(cv.plasso, default=TRUE, ...) {
   
   if (default) {
     
@@ -290,15 +297,17 @@ summary.plasso = function(plasso, default=TRUE, ...) {
 #' Print summary of (Post-) Lasso model
 #'
 #' @description
-#' Prints summary information of plasso object
+#' Prints summary information of cv.plasso object
 #'
 #' @param object Summary of plasso object (either of class "summary.plasso' or "summaryDefault")
 #' @param digits Integer, used for number formatting
 #' @param ... Pass generic R print options
+#' 
+#' @method print summary.cv.plasso
 #'
 #' @export
 #' 
-print.summary.plasso = function(object, digits=max(3L, getOption("digits") - 3L), ...) {
+print.summary.cv.plasso = function(object, digits=max(3L, getOption("digits") - 3L), ...) {
   
   if (inherits(object,'summaryDefault')) {
     
@@ -327,53 +336,63 @@ print.summary.plasso = function(object, digits=max(3L, getOption("digits") - 3L)
 #' Plot of cross-validation curves.
 #' 
 #' @param cv.plasso \code{\link{cv.plasso}} object
+#' 
+#' @method plot cv.plasso
 #'
 #' @export
 #'
-plot.plasso = function(cv.plasso,lasso=FALSE) {
+plot.cv.plasso = function(cv.plasso,lasso=FALSE) {
   
-  # Standard error of folds
-  oneSE_lasso = sqrt(apply(plasso$cv_MSE_lasso,2,var)/plasso$kf)
-  oneSE_plasso = sqrt(apply(plasso$cv_MSE_plasso,2,var)/plasso$kf)
-  oneSE_lasso[is.na(oneSE_lasso)] = 0
-  oneSE_plasso[is.na(oneSE_plasso)] = 0
+  if (!lasso) {
   
-  # Calculate 1SE bands
-  lasso_1se_up = plasso$mean_MSE_lasso+oneSE_lasso
-  lasso_1se_low = plasso$mean_MSE_lasso-oneSE_lasso
-  plasso_1se_up = plasso$mean_MSE_plasso+oneSE_plasso
-  plasso_1se_low = plasso$mean_MSE_plasso-oneSE_plasso
-  
-  # Get ranges for the graph
-  xrange = range(log(plasso$lasso_full$lambda))
-  yrange = c(max(-1.7e+308,min(lasso_1se_low,plasso_1se_low)),
-             min(1.7e+308,max(lasso_1se_up,plasso_1se_up)))
-  
-  # Plot mean lines
-  ylab = "Mean-squared Error"
-  graphics::plot(xrange,yrange,type="n",xlab="Log Lambda",ylab=ylab)
-  graphics::lines(log(plasso$lasso_full$lambda),plasso$mean_MSE_lasso,lwd=1.5,col="blue")
-  graphics::lines(log(plasso$lasso_full$lambda),plasso$mean_MSE_plasso,lwd=1.5,col="red")
-  
-  # Plot upper and lower 1SE lines
-  graphics::lines(log(plasso$lasso_full$lambda),lasso_1se_up,lty=2,lwd=1,col="blue")
-  graphics::lines(log(plasso$lasso_full$lambda),lasso_1se_low,lty=2,lwd=1,col="blue")
-  graphics::lines(log(plasso$lasso_full$lambda),plasso_1se_up,lty=2,lwd=1,col="red")
-  graphics::lines(log(plasso$lasso_full$lambda),plasso_1se_low,lty=2,lwd=1,col="red")
-  
-  # Show location of minima
-  graphics::abline(v=log(plasso$lambda_min_l),lty = 1,col="blue")
-  graphics::abline(v=log(plasso$lambda_min_pl),lty = 1,col="red")
-  
-  # Print legend
-  graphics::legend('top',c("Lasso MSE","Lasso MSE+-1SE","Post-Lasso MSE","Post-Lasso MSE+-1SE","# active coeff."),lty=c(1,2,1,2,1),
-                   col=c('blue','blue','red','red','forestgreen'),ncol=1,bty ="n",cex=0.7)
-  
-  # Open a new graph for number of coefficients to be written on existing
-  graphics::par(new=TRUE)
-  graphics::plot(log(plasso$lasso_full$lambda),plasso$lasso_full$df,axes=F,xlab=NA,ylab=NA,cex=1.2,type="l",col="forestgreen",lwd=1.5)
-  graphics::axis(side=4)
-  graphics::mtext(side=4, line=3, "# active coefficients")
+    # Standard error of folds
+    oneSE_lasso = sqrt(apply(plasso$cv_MSE_lasso,2,var)/plasso$kf)
+    oneSE_plasso = sqrt(apply(plasso$cv_MSE_plasso,2,var)/plasso$kf)
+    oneSE_lasso[is.na(oneSE_lasso)] = 0
+    oneSE_plasso[is.na(oneSE_plasso)] = 0
+    
+    # Calculate 1SE bands
+    lasso_1se_up = plasso$mean_MSE_lasso+oneSE_lasso
+    lasso_1se_low = plasso$mean_MSE_lasso-oneSE_lasso
+    plasso_1se_up = plasso$mean_MSE_plasso+oneSE_plasso
+    plasso_1se_low = plasso$mean_MSE_plasso-oneSE_plasso
+    
+    # Get ranges for the graph
+    xrange = range(log(plasso$lasso_full$lambda))
+    yrange = c(max(-1.7e+308,min(lasso_1se_low,plasso_1se_low)),
+               min(1.7e+308,max(lasso_1se_up,plasso_1se_up)))
+    
+    # Plot mean lines
+    ylab = "Mean-squared Error"
+    graphics::plot(xrange,yrange,type="n",xlab="Log Lambda",ylab=ylab)
+    graphics::lines(log(plasso$lasso_full$lambda),plasso$mean_MSE_lasso,lwd=1.5,col="blue")
+    graphics::lines(log(plasso$lasso_full$lambda),plasso$mean_MSE_plasso,lwd=1.5,col="red")
+    
+    # Plot upper and lower 1SE lines
+    graphics::lines(log(plasso$lasso_full$lambda),lasso_1se_up,lty=2,lwd=1,col="blue")
+    graphics::lines(log(plasso$lasso_full$lambda),lasso_1se_low,lty=2,lwd=1,col="blue")
+    graphics::lines(log(plasso$lasso_full$lambda),plasso_1se_up,lty=2,lwd=1,col="red")
+    graphics::lines(log(plasso$lasso_full$lambda),plasso_1se_low,lty=2,lwd=1,col="red")
+    
+    # Show location of minima
+    graphics::abline(v=log(plasso$lambda_min_l),lty = 1,col="blue")
+    graphics::abline(v=log(plasso$lambda_min_pl),lty = 1,col="red")
+    
+    # Print legend
+    graphics::legend('top',c("Lasso MSE","Lasso MSE+-1SE","Post-Lasso MSE","Post-Lasso MSE+-1SE","# active coeff."),lty=c(1,2,1,2,1),
+                     col=c('blue','blue','red','red','forestgreen'),ncol=1,bty ="n",cex=0.7)
+    
+    # Open a new graph for number of coefficients to be written on existing
+    graphics::par(new=TRUE)
+    graphics::plot(log(plasso$lasso_full$lambda),plasso$lasso_full$df,axes=F,xlab=NA,ylab=NA,cex=1.2,type="l",col="forestgreen",lwd=1.5)
+    graphics::axis(side=4)
+    graphics::mtext(side=4, line=3, "# active coefficients")
+    
+  } else if (lasso) {
+    
+    plot(cv.plasso$lasso_full)
+    
+  }
 }
 
 

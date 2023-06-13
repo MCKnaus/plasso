@@ -171,6 +171,6 @@ fit_betas = function(x,y,w,nm_act,coef_lasso) {
   beta_plasso = solve(XtX, Xty)
   beta_plasso = unlist(beta_plasso[,1])
   coef_plasso = coef_lasso
-  coef_plasso[names(beta_plasso)] = beta_plasso
+  coef_plasso[nm_act] = beta_plasso
   return(coef_plasso)
 }

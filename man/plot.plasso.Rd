@@ -2,13 +2,28 @@
 % Please edit documentation in R/plasso.R
 \name{plot.plasso}
 \alias{plot.plasso}
-\title{Plot of cross-validation curves}
+\title{Plot coefficient paths}
 \usage{
-\method{plot}{plasso}(plasso)
+\method{plot}{plasso}(
+  plasso,
+  lasso = FALSE,
+  xvar = c("norm", "lambda", "dev"),
+  label = FALSE,
+  norm
+)
 }
 \arguments{
 \item{plasso}{\code{\link{plasso}} object}
+
+\item{lasso}{If set as True, coefficient paths for Lasso instead of Post-Lasso is plotted. Default is False.}
+
+\item{xvar}{What is on the X-axis
+"norm" plots against the L1-norm of the coefficients,
+"lambda" against the log-lambda sequence,
+and "dev" against the percent deviance explained.}
+
+\item{label}{If TRUE, label the curves with variable sequence numbers}
 }
 \description{
-Plot of cross-validation curves.
+Plot coefficient paths of (Post-) Lasso model.
 }
