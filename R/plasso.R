@@ -1,13 +1,13 @@
 #' Lasso and Post-Lasso
 #' 
 #' @description
-#' \emph{plasso()} implicitly estimates a Lasso model using the \code{\link{glmnet}} package
+#' \emph{plasso()} implicitly estimates a Lasso model using the \code{\link[glmnet]{glmnet}} package
 #' and additionally estimates coefficient paths for a subsequent Post-Lasso model.
 #'
 #' @param x Matrix of covariates (number of observations times number of covariates matrix)
 #' @param y Vector of outcomes
 #' @param w Vector of weights
-#' @param ... Pass \code{\link{glmnet}} options
+#' @param ... Pass \code{\link[glmnet]{glmnet}} options
 #' 
 #' @import glmnet
 #' @import Matrix
@@ -63,7 +63,8 @@ plasso = function(x,y,
 #' @description
 #' Plot coefficient paths of (Post-) Lasso model.
 #' 
-#' @param plasso \code{\link{plasso}} object
+#' @param x \code{\link[plasso]{plasso}} object
+#' @param ... Pass generic \code{\link[base]{plot}} options
 #' @param lasso If set as True, coefficient paths for Lasso instead of Post-Lasso is plotted. Default is False.
 #' @param xvar What is on the X-axis
 #' "norm" plots against the L1-norm of the coefficients,
@@ -73,17 +74,18 @@ plasso = function(x,y,
 #'
 #' @export
 #'
-plot.plasso = function(plasso,lasso=FALSE,xvar=c("norm","lambda","dev"),label=FALSE,norm) {
+plot.plasso = function(x,..., lasso=FALSE,xvar=c("norm","lambda","dev"),label=FALSE) {
+  
   
   nzC = utils::getFromNamespace("nonzeroCoef", "glmnet")
   
   if (!lasso) {
     
-    lambda = plasso$lasso_full$lambda
-    df = plasso$lasso_full$df
-    dev = plasso$lasso_full$dev.ratio
+    lambda = x$lasso_full$lambda
+    df = x$lasso_full$df
+    dev = x$lasso_full$dev.ratio
     
-    beta = plasso$beta_plasso[-1,]
+    beta = x$beta_plasso[-1,]
     
     which = nzC(beta)
     nwhich = length(which)
@@ -99,7 +101,7 @@ plot.plasso = function(plasso,lasso=FALSE,xvar=c("norm","lambda","dev"),label=FA
     xvar = match.arg(xvar)
     switch(xvar,
            "norm"={
-             index=if(missing(norm))apply(abs(beta),2,sum)else norm
+             index=apply(abs(beta),2,sum)
              iname="L1 Norm"
              approx.f=1
            },
@@ -115,7 +117,7 @@ plot.plasso = function(plasso,lasso=FALSE,xvar=c("norm","lambda","dev"),label=FA
            }
     )
 
-    matplot(index,t(beta),lty=1,type="l")
+    matplot(index,t(beta),lty=1,type="l",...)
     
     atdf = pretty(index)
     prettydf = approx(x=index,y=df,xout=atdf,rule=2,method="constant",f=approx.f)$y
@@ -136,7 +138,7 @@ plot.plasso = function(plasso,lasso=FALSE,xvar=c("norm","lambda","dev"),label=FA
     
   } else if (lasso) {
     
-    plot(cv.plasso$lasso_full)
+    plot(cv.plasso$lasso_full,xvar=xvar,label=label,...)
     
   }
   

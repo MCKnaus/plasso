@@ -17,11 +17,11 @@ cv.plasso(x, y, w = NULL, kf = 10, parallel = FALSE, ...)
 
 \item{parallel}{Set as FALSE for parallelized cross-validation}
 
-\item{...}{Pass \code{\link{glmnet}} options}
+\item{...}{Pass \code{\link[glmnet]{glmnet}} options}
 }
 \value{
 List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
 }
 \description{
-\emph{cv.plasso()} uses the \code{\link{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
+\emph{cv.plasso()} uses the \code{\link[glmnet]{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
 }

@@ -4,10 +4,14 @@
 \alias{plot.cv.plasso}
 \title{Plot of cross-validation curves}
 \usage{
-\method{plot}{cv.plasso}(cv.plasso, lasso = FALSE)
+\method{plot}{cv.plasso}(x, ..., lasso = FALSE)
 }
 \arguments{
-\item{cv.plasso}{\code{\link{cv.plasso}} object}
+\item{x}{\code{\link[plasso]{cv.plasso}} object}
+
+\item{...}{Pass generic \code{\link[base]{plot}} options}
+
+\item{lasso}{If set as True, only the cross-validation curve for the Lasso model is plotted. Default is False.}
 }
 \description{
 Plot of cross-validation curves.

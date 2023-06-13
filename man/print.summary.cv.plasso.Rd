@@ -4,14 +4,14 @@
 \alias{print.summary.cv.plasso}
 \title{Print summary of (Post-) Lasso model}
 \usage{
-\method{print}{summary.cv.plasso}(object, digits = max(3L, getOption("digits") - 3L), ...)
+\method{print}{summary.cv.plasso}(x, ..., digits = max(3L, getOption("digits") - 3L))
 }
 \arguments{
-\item{object}{Summary of plasso object (either of class "summary.plasso' or "summaryDefault")}
+\item{x}{Summary of plasso object (either of class "summary.plasso' or "summaryDefault")}
+
+\item{...}{Pass generic R \code{\link[base]{print}} options}
 
 \item{digits}{Integer, used for number formatting}
-
-\item{...}{Pass generic R print options}
 }
 \description{
 Prints summary information of cv.plasso object

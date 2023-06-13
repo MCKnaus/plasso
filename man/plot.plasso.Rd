@@ -4,16 +4,12 @@
 \alias{plot.plasso}
 \title{Plot coefficient paths}
 \usage{
-\method{plot}{plasso}(
-  plasso,
-  lasso = FALSE,
-  xvar = c("norm", "lambda", "dev"),
-  label = FALSE,
-  norm
-)
+\method{plot}{plasso}(x, ..., lasso = FALSE, xvar = c("norm", "lambda", "dev"), label = FALSE)
 }
 \arguments{
-\item{plasso}{\code{\link{plasso}} object}
+\item{x}{\code{\link[plasso]{plasso}} object}
+
+\item{...}{Pass generic \code{\link[base]{plot}} options}
 
 \item{lasso}{If set as True, coefficient paths for Lasso instead of Post-Lasso is plotted. Default is False.}
 

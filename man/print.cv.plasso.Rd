@@ -4,14 +4,14 @@
 \alias{print.cv.plasso}
 \title{Print (Post-) Lasso model}
 \usage{
-\method{print}{cv.plasso}(plasso, digits = max(3, getOption("digits") - 3), ...)
+\method{print}{cv.plasso}(x, ..., digits = max(3, getOption("digits") - 3))
 }
 \arguments{
-\item{plasso}{\code{\link{cv.plasso}} object}
+\item{x}{\code{\link[plasso]{cv.plasso}} object}
+
+\item{...}{Pass generic \code{\link[base]{print}} options}
 
 \item{digits}{Integer, used for number formatting}
-
-\item{...}{Pass generic R print options}
 }
 \value{
 Prints cross-validated MSE and active variables for Lasso and Post-Lasso.

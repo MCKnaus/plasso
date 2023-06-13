@@ -4,14 +4,14 @@
 \alias{summary.cv.plasso}
 \title{Summary of (Post-) Lasso model}
 \usage{
-\method{summary}{cv.plasso}(cv.plasso, default = TRUE, ...)
+\method{summary}{cv.plasso}(object, ..., default = TRUE)
 }
 \arguments{
+\item{object}{\code{\link[plasso]{cv.plasso}} object}
+
+\item{...}{Pass generic \code{\link[base]{summary}} summary options}
+
 \item{default}{TRUE for glmnet-like summary output, FALSE for more specific summary information}
-
-\item{...}{Pass generic R summary options}
-
-\item{plasso}{\code{\link{plasso}} object}
 }
 \value{
 Prints cross-validated MSE and active variables for Lasso and Post-Lasso.

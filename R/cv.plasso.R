@@ -1,14 +1,14 @@
 #' Cross-validated Lasso and Post-Lasso
 #' 
 #' @description
-#' \emph{cv.plasso()} uses the \code{\link{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
+#' \emph{cv.plasso()} uses the \code{\link[glmnet]{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
 #'
 #' @param x Matrix of covariates (number of observations times number of covariates matrix)
 #' @param y Vector of outcomes
 #' @param w Vector of weights
 #' @param kf Number of folds in k-fold CV
 #' @param parallel Set as FALSE for parallelized cross-validation
-#' @param ... Pass \code{\link{glmnet}} options
+#' @param ... Pass \code{\link[glmnet]{glmnet}} options
 #' 
 #' @import glmnet
 #' @import Matrix
@@ -125,9 +125,9 @@ cv.plasso = function(x,y,
 #' @description
 #' Printing main insights from (Post-) Lasso model.
 #'
-#' @param plasso \code{\link{cv.plasso}} object
+#' @param x \code{\link[plasso]{cv.plasso}} object
+#' @param ... Pass generic \code{\link[base]{print}} options
 #' @param digits Integer, used for number formatting
-#' @param ... Pass generic R print options
 #'
 #' @return Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
 #' 
@@ -135,8 +135,9 @@ cv.plasso = function(x,y,
 #'
 #' @export
 #'
-print.cv.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) {
+print.cv.plasso = function(x,...,digits=max(3, getOption("digits")-3)) {
   
+  plasso = x
   cat("\nCall: ", deparse(plasso$call), "\n\n")
   out = data.frame(Df=plasso$lasso_full$df,
                    `%Dev`=round(plasso$lasso_full$dev.ratio*100, 2),
@@ -154,7 +155,8 @@ print.cv.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) 
 #' @description
 #' Prediction after (Post-) Lasso.
 #'
-#' @param plasso Fitted \code{\link{cv.plasso}} model object
+#' @param object Fitted \code{\link[plasso]{cv.plasso}} model object
+#' @param ... Pass generic \code{\link[stats]{predict}} options
 #' @param xnew Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
 #' @param type Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.
 #' @param s Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.
@@ -167,13 +169,15 @@ print.cv.plasso = function(plasso, digits=max(3, getOption("digits") - 3), ...) 
 #'
 #' @export
 #'
-predict.cv.plasso = function(cv.plasso,
+predict.cv.plasso = function(object,
+                             ...,
                              xnew=NULL,
                              type=c("response","coefficients"),
                              s=c("optimal","all"),
                              weights=NULL,
                              se_rule=0) {
   
+  plasso = object
   # Check if type and s is valid
   type = match.arg(type)
   s = match.arg(s)
@@ -261,9 +265,9 @@ predict.cv.plasso = function(cv.plasso,
 #' @description
 #' Summary of (Post-) Lasso model.
 #'
-#' @param plasso \code{\link{plasso}} object
+#' @param object \code{\link[plasso]{cv.plasso}} object
+#' @param ... Pass generic \code{\link[base]{summary}} summary options
 #' @param default TRUE for glmnet-like summary output, FALSE for more specific summary information
-#' @param ... Pass generic R summary options
 #'
 #' @return Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
 #' 
@@ -271,7 +275,9 @@ predict.cv.plasso = function(cv.plasso,
 #'
 #' @export
 #'
-summary.cv.plasso = function(cv.plasso, default=TRUE, ...) {
+summary.cv.plasso = function(object,...,default=TRUE) {
+  
+  plasso = object
   
   if (default) {
     
@@ -299,31 +305,31 @@ summary.cv.plasso = function(cv.plasso, default=TRUE, ...) {
 #' @description
 #' Prints summary information of cv.plasso object
 #'
-#' @param object Summary of plasso object (either of class "summary.plasso' or "summaryDefault")
+#' @param x Summary of plasso object (either of class "summary.plasso' or "summaryDefault")
+#' @param ... Pass generic R \code{\link[base]{print}} options
 #' @param digits Integer, used for number formatting
-#' @param ... Pass generic R print options
 #' 
 #' @method print summary.cv.plasso
 #'
 #' @export
 #' 
-print.summary.cv.plasso = function(object, digits=max(3L, getOption("digits") - 3L), ...) {
+print.summary.cv.plasso = function(x,...,digits=max(3L, getOption("digits") - 3L)) {
   
-  if (inherits(object,'summaryDefault')) {
+  if (inherits(x,'summaryDefault')) {
     
-    print.summaryDefault(object, digits=digits, ...)
+    print.summaryDefault(x, digits=digits, ...)
     
-  } else if (inherits(object,'summary.plasso')){
+  } else if (inherits(x,'summary.plasso')){
     
-    cat("\nCall:\n ", paste(deparse(object$call), sep="\n", collapse = "\n"), "\n\n", sep = "")
+    cat("\nCall:\n ", paste(deparse(x$call), sep="\n", collapse = "\n"), "\n\n", sep = "")
     
-    cat("Lasso:\n Minimum CV MSE Lasso: ",toString(signif(min(object$mean_MSE_lasso,na.rm=TRUE),digits)))
-    cat("\n Lambda at minimum: ",toString(signif(object$lasso_full$lambda[object$ind_min_l],digits)))
-    cat("\n Active variables at minimum: ",names(coef(object$lasso_full)[,object$ind_min_l])[which(coef(object$lasso_full)[,object$ind_min_l] != 0)])
+    cat("Lasso:\n Minimum CV MSE Lasso: ",toString(signif(min(x$mean_MSE_lasso,na.rm=TRUE),digits)))
+    cat("\n Lambda at minimum: ",toString(signif(x$lasso_full$lambda[x$ind_min_l],digits)))
+    cat("\n Active variables at minimum: ",names(coef(x$lasso_full)[,x$ind_min_l])[which(coef(x$lasso_full)[,x$ind_min_l] != 0)])
     
-    cat("\nPost-Lasso:\n Minimum CV MSE Post-Lasso: ",toString(signif(min(object$mean_MSE_plasso,na.rm=TRUE),digits)))
-    cat("\n Lambda at minimum: ",toString(signif(object$lasso_full$lambda[object$ind_min_pl],digits)))
-    cat("\n Active variables at minimum: ",names(coef(object$lasso_full)[,object$ind_min_pl])[which(coef(object$lasso_full)[,object$ind_min_pl] != 0)])
+    cat("\nPost-Lasso:\n Minimum CV MSE Post-Lasso: ",toString(signif(min(x$mean_MSE_plasso,na.rm=TRUE),digits)))
+    cat("\n Lambda at minimum: ",toString(signif(x$lasso_full$lambda[x$ind_min_pl],digits)))
+    cat("\n Active variables at minimum: ",names(coef(x$lasso_full)[,x$ind_min_pl])[which(coef(x$lasso_full)[,x$ind_min_pl] != 0)])
     
   }
   
@@ -335,13 +341,17 @@ print.summary.cv.plasso = function(object, digits=max(3L, getOption("digits") - 
 #' @description
 #' Plot of cross-validation curves.
 #' 
-#' @param cv.plasso \code{\link{cv.plasso}} object
+#' @param x \code{\link[plasso]{cv.plasso}} object
+#' @param ... Pass generic \code{\link[base]{plot}} options
+#' @param lasso If set as True, only the cross-validation curve for the Lasso model is plotted. Default is False.
 #' 
 #' @method plot cv.plasso
 #'
 #' @export
 #'
-plot.cv.plasso = function(cv.plasso,lasso=FALSE) {
+plot.cv.plasso = function(x,...,lasso=FALSE) {
+  
+  plasso = x
   
   if (!lasso) {
   
@@ -390,7 +400,7 @@ plot.cv.plasso = function(cv.plasso,lasso=FALSE) {
     
   } else if (lasso) {
     
-    plot(cv.plasso$lasso_full)
+    plot(cv.plasso$lasso_full,...)
     
   }
 }
@@ -408,7 +418,7 @@ plot.cv.plasso = function(cv.plasso,lasso=FALSE) {
 #' @param list List 1:k
 #' @param i Number of fold that is used for prediction
 #' @param lambda Series of lambdas used
-#' @param ... Pass \code{\link{glmnet}} options
+#' @param ... Pass \code{\link[glmnet]{glmnet}} options
 #'
 #' @return MSE_lasso / MSE_plasso: means squared errors for each lambda.
 #'

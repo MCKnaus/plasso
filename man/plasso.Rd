@@ -13,12 +13,12 @@ plasso(x, y, w = NULL, ...)
 
 \item{w}{Vector of weights}
 
-\item{...}{Pass \code{\link{glmnet}} options}
+\item{...}{Pass \code{\link[glmnet]{glmnet}} options}
 }
 \value{
 List including glmnet object and names of selected variables at cross-validated minima for Lasso and Post-Lasso.
 }
 \description{
-\emph{plasso()} implicitly estimates a Lasso model using the \code{\link{glmnet}} package
+\emph{plasso()} implicitly estimates a Lasso model using the \code{\link[glmnet]{glmnet}} package
 and additionally estimates coefficient paths for a subsequent Post-Lasso model.
 }

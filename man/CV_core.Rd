@@ -21,7 +21,7 @@ CV_core(x, y, w, cvgroup, list, i, lambda, ...)
 
 \item{lambda}{Series of lambdas used}
 
-\item{...}{Pass \code{\link{glmnet}} options}
+\item{...}{Pass \code{\link[glmnet]{glmnet}} options}
 }
 \value{
 MSE_lasso / MSE_plasso: means squared errors for each lambda.
