@@ -1,0 +1,48 @@
+---
+title: "An introduction to `plasso`"
+author: "Michael Knaus & Stefan Glaisner"
+date: "SoSe 23"
+output: 
+  html_notebook:
+    toc: true
+    toc_float: true
+    code_folding: show
+---
+
+This notebook provides a detailed overview over the `plasso` package and its two main functions `plasso` and `cv.plasso`. This package is strongly oriented around the `glmnet` package and rests on its standard function `glmnet` in its very basis.
+
+
+# Getting started
+
+Make sure that you install the package from its [Github page](https://github.com/stefan-1997/plasso). For the installation you will need the `devtools` package. The dependencies of `plasso` are: `glmnet`, `Matrix`, `methods`, `parallel`, `doParallel`, `foreach` and `iterators`.
+
+```{r}
+
+library(devtools)
+devtools::install_github("stefan-1997/plasso")
+
+```
+
+Then, `plasso` can be loaded via the standard `library` function.
+
+```{r}
+
+library(plasso)
+
+```
+
+
+
+# plasso
+
+tbd
+
+# cv.plasso
+
+tbd
+
+```{r}
+
+```
+
+
