@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv.plasso.R
 \name{predict.cv.plasso}
 \alias{predict.cv.plasso}
-\title{Predict after (Post-) Lasso}
+\title{Predict after cross-validated (Post-) Lasso}
 \usage{
 \method{predict}{cv.plasso}(
   object,
@@ -31,6 +31,9 @@
 models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
 (e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".}
 }
+\value{
+Returns predictions of coefficients or fitted values for all lambda values or the optimal one.
+}
 \description{
-Prediction after (Post-) Lasso.
+Prediction for cross-validated (Post-) Lasso.
 }

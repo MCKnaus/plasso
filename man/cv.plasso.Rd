@@ -15,12 +15,12 @@ cv.plasso(x, y, w = NULL, kf = 10, parallel = FALSE, ...)
 
 \item{kf}{Number of folds in k-fold CV}
 
-\item{parallel}{Set as FALSE for parallelized cross-validation}
+\item{parallel}{Set as TRUE for parallelized cross-validation. Default is FALSE.}
 
 \item{...}{Pass \code{\link[glmnet]{glmnet}} options}
 }
 \value{
-List with the names of selected variables at cross-validated minima for Lasso and Post-Lasso.
+List object including base \code{\link[glmnet]{glmnet}} object and cross-validation results (incl. optimal Lambda values) for both Lasso and Post-Lasso model.
 }
 \description{
 \emph{cv.plasso()} uses the \code{\link[glmnet]{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.

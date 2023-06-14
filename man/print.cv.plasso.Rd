@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv.plasso.R
 \name{print.cv.plasso}
 \alias{print.cv.plasso}
-\title{Print (Post-) Lasso model}
+\title{Print cross-validated (Post-) Lasso model}
 \usage{
 \method{print}{cv.plasso}(x, ..., digits = max(3, getOption("digits") - 3))
 }
@@ -14,8 +14,8 @@
 \item{digits}{Integer, used for number formatting}
 }
 \value{
-Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
+Prints cross-validated MSE for both Lasso and Post-Lasso model as well as the number of active variables.
 }
 \description{
-Printing main insights from (Post-) Lasso model.
+Printing main insights from cross-validated (Post-) Lasso model.
 }

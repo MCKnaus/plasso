@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv.plasso.R
 \name{summary.cv.plasso}
 \alias{summary.cv.plasso}
-\title{Summary of (Post-) Lasso model}
+\title{Summary of cross-validated (Post-) Lasso model}
 \usage{
 \method{summary}{cv.plasso}(object, ..., default = TRUE)
 }
@@ -14,8 +14,8 @@
 \item{default}{TRUE for glmnet-like summary output, FALSE for more specific summary information}
 }
 \value{
-Prints cross-validated MSE and active variables for Lasso and Post-Lasso.
+For specific summary information: List object containing optimal lambda value and associated MSE for both cross-validated Lasso and Post-Lasso model.
 }
 \description{
-Summary of (Post-) Lasso model.
+Summary of cross-validated (Post-) Lasso model.
 }
