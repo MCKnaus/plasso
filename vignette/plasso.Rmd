@@ -1,0 +1,134 @@
+---
+title: "An introduction to `plasso`"
+author:
+  - Michael Knaus
+  - Stefan Glaisner
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+bibliography: assets/plasso_refs.bib
+link-citations: true
+output:
+  rmarkdown::html_vignette:
+    fig_width: 8
+    fig_height: 4
+    toc: true
+    code_folding: show
+vignette: >
+  %\VignetteIndexEntry{An Introduction to plasso}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, include=FALSE}
+
+hook_output <- knitr::knit_hooks$get("output")
+
+knitr::knit_hooks$set(output = function(x, options) {
+  if (!is.null(n <- options$out.lines)) {
+    x <- xfun::split_lines(x)
+    if (length(x) > n) {
+      x <- c(head(x, n), "....\n")
+    }
+    x <- paste(x, collapse = "\n")
+  }
+  hook_output(x, options)
+})
+
+```
+
+This notebook provides a detailed overview over the `plasso` package and its two main functions `plasso` and `cv.plasso` which were developed in the course of @knaus. This package is strongly oriented around the `glmnet` package and rests on its standard function `glmnet` in its very basis. Related theory and algorithms are described in @glmnet.
+
+
+# Getting started
+
+Make sure that you install the package from its [Github page](https://github.com/stefan-1997/plasso). For the installation you will need the `devtools` package. General dependencies are: `glmnet`, `Matrix`, `methods`, `parallel`, `doParallel`, `foreach` and `iterators`.
+
+```{r startup, eval=FALSE, error=FALSE, warning=FALSE, message=FALSE}
+
+library(devtools)
+devtools::install_github("stefan-1997/plasso")
+
+```
+
+Then, `plasso` can be loaded via the standard `library` function.
+
+```{r load}
+
+library(plasso)
+
+```
+
+The package generally provides two functions `plasso` and `cv.plasso` which are both built on top of the `glmnet` functionality. Specifically, a `glmnet` object lives within both functions and also in their outputs (list item `lasso_full`).
+
+The term `plasso` refers to a Post-Lasso model which estimates a least squares algorithm only for the active (i.e. non-zero) coefficients of a previously estimated Lasso models. This follows the idea that we want to do selection but without shrinkage.
+
+We will deal with some simulated data here.
+
+```{r data}
+
+n = 1000
+p = 20
+x = matrix(runif(n*p,-pi,pi),ncol=p)
+y = runif(n)
+w = runif(n)
+
+```
+
+# plasso
+
+`plasso` basically estimates least squares estimates for all lambda values of a standard `glmnet` object. The function's standard output is comparable to the one of a simple `glmnet` output.
+
+```{r fitplasso, out.lines=10}
+
+fit_p = plasso::plasso(x,y,w)
+fit_p
+
+```
+
+You can plot the coefficient paths for both the Post-Lasso model as well as the underlying 'original' Lasso model.
+
+```{r plotplasso, error=FALSE, warning=FALSE, message=FALSE}
+
+plot(fit_p)
+plot(fit_p, lasso=TRUE)
+
+```
+
+
+# cv.plasso
+
+The `cv.plasso` function uses cross-validation to determine the performance of different values for the `lambda` penalty term for both models (Post-Lasso and Lasso). The returned output of class `cv.plasso` includes the mean squared errors.
+
+When applying the `summary` method and setting the `default` parameter as FALSE, we get some informative output considering the optimal choice of lambda.
+
+```{r fitcvplasso}
+
+fit_p_cv = plasso::cv.plasso(x,y,w,kf=5,parallel=FALSE)
+summary(fit_p_cv, default=FALSE)
+
+```
+
+Plot the cross-validated MSE by Lambda value for all models or the Lasso model only.
+
+```{r plotcvplasso, fig.width=10, fig.height=5}
+
+plot(fit_p_cv, legend_pos="bottomleft", legend_size=0.5)
+plot(fit_p_cv, lasso=TRUE)
+
+```
+
+We can use the following code to get the value of the optimal `lambda` (for the Post-Lasso model) and the coefficients at that value of $\lambda$.
+
+```{r index_min_plasso}
+
+fit_p_cv$lambda_min_pl
+
+```
+
+```{r coef_min_plasso, out.lines=10}
+
+coef(fit_p_cv, S="optimal")
+
+```
+<br>
+<br>
+<br>

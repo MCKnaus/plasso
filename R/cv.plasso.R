@@ -278,7 +278,7 @@ predict.cv.plasso = function(object,
     coef_lasso = coef(plasso$lasso_full)[,ind_Xse_l]
     
     nm_act = names(coef(plasso$lasso_full)[,ind_Xse_pl])[which(coef(plasso$lasso_full)[,ind_Xse_pl] != 0)]
-    coef_plasso = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,ind_Xse_l])
+    coef_plasso = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,ind_Xse_pl])
     
     if (type == "coefficients") {
       
@@ -300,34 +300,28 @@ predict.cv.plasso = function(object,
     
     l = length(plasso$lasso_full$lambda)
     
+    coef_lasso = as.matrix(coef(plasso$lasso_full))
+    coef_plasso = matrix(NA,nrow=ncol(x),ncol=l,dimnames=list(colnames(x),colnames(coef_lasso)))
+    
+    for (i in 1:l) {
+  
+      nm_act = names(coef_lasso[,i])[which(coef_lasso[,i] != 0)]
+      coef_plasso[,i] = fit_betas(x,y,w,nm_act,coef_lasso[,i])
+    }
+    
     if (type == "coefficients") {
-      
-      coef_lasso = matrix(NA,nrow=l,ncol=ncol(x),dimnames=list(1:l,colnames(x)))
-      coef_plasso = matrix(NA,nrow=l,ncol=ncol(x),dimnames=list(1:l,colnames(x)))
-      
-      for (i in 1:l) {
-        coef_lasso[i,] = coef(plasso$lasso_full)[,i]
-        
-        nm_act = names(coef(plasso$lasso_full)[,i])[which(coef(plasso$lasso_full)[,i] != 0)]
-        coef_plasso[i,] = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,i])
-      }
-      colnames(coef_lasso) = colnames(x)
-      colnames(coef_plasso) = colnames(x)
       
       return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
       
     } else if (type == "response"){
       
-      fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),1:l))
-      fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),1:l))
+      fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),colnames(coef_lasso)))
+      fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),colnames(coef_lasso)))
       
       for (i in 1:l) {
         
-        fit_lasso[,i] = x %*% coef(plasso$lasso_full)[,i]
-        
-        nm_act = names(coef(plasso$lasso_full)[,i])[which(coef(plasso$lasso_full)[,i] != 0)]
-        coef_plasso = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,i])
-        fit_plasso[,i] = x %*% coef_plasso 
+        fit_lasso[,i] = x %*% coef_lasso[,i]
+        fit_plasso[,i] = x %*% coef_plasso[,i]
       }
       
       return(list("lasso"=fit_lasso,"plasso"=fit_plasso))
@@ -368,15 +362,21 @@ coef.cv.plasso = function(object,...,s=c("optimal","all"),se_rule=0,weights=NULL
 #' 
 #' @param x \code{\link[plasso]{cv.plasso}} object
 #' @param ... Pass generic \code{\link[base]{plot}} options
+#' @param legend_pos Legend position. Only considered for joint plot (lass=FALSE).
+#' @param legend_size Font size of legend
 #' @param lasso If set as True, only the cross-validation curve for the Lasso model is plotted. Default is False.
 #' 
 #' @method plot cv.plasso
 #'
 #' @export
 #'
-plot.cv.plasso = function(x,...,lasso=FALSE) {
+plot.cv.plasso = function(x,...,
+                          legend_pos=c("bottomright","bottom","bottomleft","left","topleft","top","topright","right","center"),
+                          legend_size=0.5,
+                          lasso=FALSE) {
   
   plasso = x
+  legend_pos = match.arg(legend_pos)
   
   if (!lasso) {
   
@@ -414,8 +414,8 @@ plot.cv.plasso = function(x,...,lasso=FALSE) {
     graphics::abline(v=log(plasso$lambda_min_pl),lty = 1,col="red")
     
     # Print legend
-    graphics::legend('top',c("Lasso MSE","Lasso MSE+-1SE","Post-Lasso MSE","Post-Lasso MSE+-1SE","# active coeff."),lty=c(1,2,1,2,1),
-                     col=c('blue','blue','red','red','forestgreen'),ncol=1,bty ="n",cex=0.7)
+    graphics::legend(legend_pos, c("Lasso MSE","Lasso MSE+-1SE","Post-Lasso MSE","Post-Lasso MSE+-1SE","# active coeff."),lty=c(1,2,1,2,1),
+                     col=c('blue','blue','red','red','forestgreen'),ncol=1,bty ="n",cex=legend_size)
     
     # Open a new graph for number of coefficients to be written on existing
     graphics::par(new=TRUE)
@@ -425,7 +425,7 @@ plot.cv.plasso = function(x,...,lasso=FALSE) {
     
   } else if (lasso) {
     
-    plot(cv.plasso$lasso_full,...)
+    plot(plasso$lasso_full,...)
     
   }
 }

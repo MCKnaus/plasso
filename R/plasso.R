@@ -146,19 +146,10 @@ predict.plasso = function(object,
     
     l = length(plasso$lasso_full$lambda)
     
+    coef_lasso = as.matrix(coef(plasso$lasso_full))
+    coef_plasso = as.matrix(plasso$beta_plasso)
+    
     if (type == "coefficients") {
-      
-      coef_lasso = matrix(NA,nrow=l,ncol=ncol(x),dimnames=list(1:l,colnames(x)))
-      coef_plasso = matrix(NA,nrow=l,ncol=ncol(x),dimnames=list(1:l,colnames(x)))
-      
-      for (i in 1:l) {
-        coef_lasso[i,] = coef(plasso$lasso_full)[,i]
-        
-        nm_act = names(coef(plasso$lasso_full)[,i])[which(coef(plasso$lasso_full)[,i] != 0)]
-        coef_plasso[i,] = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,i])
-      }
-      colnames(coef_lasso) = colnames(x)
-      colnames(coef_plasso) = colnames(x)
       
       return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
       
@@ -169,11 +160,8 @@ predict.plasso = function(object,
       
       for (i in 1:l) {
         
-        fit_lasso[,i] = x %*% coef(plasso$lasso_full)[,i]
-        
-        nm_act = names(coef(plasso$lasso_full)[,i])[which(coef(plasso$lasso_full)[,i] != 0)]
-        coef_plasso = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,i])
-        fit_plasso[,i] = x %*% coef_plasso 
+        fit_lasso[,i] = x %*% coef_lasso[,i]
+        fit_plasso[,i] = x %*% coef_plasso[,i]
       }
       
       return(list("lasso"=fit_lasso,"plasso"=fit_plasso))
@@ -181,15 +169,13 @@ predict.plasso = function(object,
       
   } else if (is.numeric(s) && length(s) == 1){
     
-    abs_diff <- abs(plasso$lasso_full$lambda - s)
-    closest_index <- which.min(abs_diff)
-    closest_lambda <- plasso$lasso_full$lambda[closest_index]
+    abs_diff = abs(plasso$lasso_full$lambda - s)
+    closest_index = which.min(abs_diff)
+    closest_lambda = plasso$lasso_full$lambda[closest_index]
     
     coef_lasso = coef(plasso$lasso_full)[,closest_index]
-    
-    nm_act = names(coef_lasso)[which(coef_lasso != 0)]
-    coef_plasso = fit_betas(x,y,w,nm_act,coef_lasso)
-    
+    coef_plasso = plasso$beta_plasso[,closest_index]
+
     if (type == "coefficients") {
       
       return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
@@ -288,7 +274,7 @@ plot.plasso = function(x,..., lasso=FALSE,xvar=c("norm","lambda","dev"),label=FA
            }
     )
 
-    matplot(index,t(beta),lty=1,type="l",...)
+    matplot(index,t(beta),lty=1,type="l",xlab=iname,ylab="Coefficients",...)
     
     atdf = pretty(index)
     prettydf = approx(x=index,y=df,xout=atdf,rule=2,method="constant",f=approx.f)$y
@@ -309,7 +295,7 @@ plot.plasso = function(x,..., lasso=FALSE,xvar=c("norm","lambda","dev"),label=FA
     
   } else if (lasso) {
     
-    plot(cv.plasso$lasso_full,xvar=xvar,label=label,...)
+    plot(x$lasso_full,xvar=xvar,label=label,...)
     
   }
   

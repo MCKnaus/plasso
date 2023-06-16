@@ -4,12 +4,23 @@
 \alias{plot.cv.plasso}
 \title{Plot of cross-validation curves}
 \usage{
-\method{plot}{cv.plasso}(x, ..., lasso = FALSE)
+\method{plot}{cv.plasso}(
+  x,
+  ...,
+  legend_pos = c("bottomright", "bottom", "bottomleft", "left", "topleft", "top",
+    "topright", "right", "center"),
+  legend_size = 0.5,
+  lasso = FALSE
+)
 }
 \arguments{
 \item{x}{\code{\link[plasso]{cv.plasso}} object}
 
 \item{...}{Pass generic \code{\link[base]{plot}} options}
+
+\item{legend_pos}{Legend position. Only considered for joint plot (lass=FALSE).}
+
+\item{legend_size}{Font size of legend}
 
 \item{lasso}{If set as True, only the cross-validation curve for the Lasso model is plotted. Default is False.}
 }
