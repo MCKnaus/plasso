@@ -8,8 +8,8 @@ bibliography: assets/plasso_refs.bib
 link-citations: true
 output:
   rmarkdown::html_vignette:
-    fig_width: 8
-    fig_height: 4
+    fig_width: 7
+    fig_height: 3
     toc: true
     code_folding: show
 vignette: >
@@ -107,12 +107,21 @@ summary(fit_p_cv, default=FALSE)
 
 ```
 
-Plot the cross-validated MSE by Lambda value for all models or the Lasso model only.
+Plot the cross-validated MSE by Lambda value for both models.
 
-```{r plotcvplasso, fig.width=10, fig.height=5}
+```{r plotcvplasso, fig.width=7, fig.height=3}
 
 plot(fit_p_cv, legend_pos="bottomleft", legend_size=0.5)
-plot(fit_p_cv, lasso=TRUE)
+
+```
+
+Plot the cross-validated MSE by Lambda value for both models.
+
+```{r plotcvglmnet, fig.width=7, fig.height=3}
+
+fit_glm_cv = glmnet::cv.glmnet(x,y)
+
+plot(fit_glm_cv)
 
 ```
 
