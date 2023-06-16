@@ -86,6 +86,27 @@ print.plasso = function(x,...,digits=max(3, getOption("digits")-3)) {
 }
 
 
+#' Summary of (Post-) Lasso model
+#' 
+#' @description
+#' Summary of (Post-) Lasso model.
+#'
+#' @param object \code{\link[plasso]{plasso}} object
+#' @param ... Pass generic \code{\link[base]{summary}} summary options
+#'
+#' @return 'summaryDefault' object
+#' 
+#' @method summary plasso
+#'
+#' @export
+#'
+summary.plasso = function(object,...) {
+  
+  return(summary.default(object, ...))
+  
+}
+
+
 #' Predict for (Post-) Lasso models
 #' 
 #' @description

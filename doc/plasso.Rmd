@@ -3,7 +3,7 @@ title: "An introduction to `plasso`"
 author: "Michael Knaus & Stefan Glaisner"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: 
-  html_notebook:
+  html_document:
     toc: true
     toc_float: true
     code_folding: show
@@ -66,14 +66,23 @@ w = runif(n)
 
 # plasso
 
-`plasso` basically estimates least squares estimates for all lambda values of a standard `glmnet` object.
+`plasso` basically estimates least squares estimates for all lambda values of a standard `glmnet` object. The function's standard output is comparable to the one of a simple `glmnet` output.
 
 ```{r out.lines=10}
 
-fit_p = plasso::cv.plasso(x,y,w)
+fit_p = plasso::plasso(x,y,w)
 fit_p
 
 ```
+
+
+
+```{r out.lines=10}
+
+summary(fit_p)
+
+```
+
 
 # cv.plasso
 
@@ -81,8 +90,8 @@ tbd
 
 ```{r}
 
-fit_p = plasso::cv.plasso(x,y,w)
-print(p)
+fit_p_cv = plasso::cv.plasso(x,y,w)
+print(fit_p_cv)
 
 ```
 
