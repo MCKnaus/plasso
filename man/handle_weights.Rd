@@ -7,7 +7,7 @@
 handle_weights(w, n)
 }
 \arguments{
-\item{w}{Vector of weights or null if no weights provided}
+\item{w}{Vector or n x 1 matrix of weights or null if no weights provided}
 
 \item{n}{Number of observations}
 }

@@ -11,6 +11,7 @@
 
 <meta name="author" content="Michael Knaus &amp; Stefan Glaisner" />
 
+<meta name="date" content="2023-06-14" />
 
 <title>An introduction to plasso</title>
 
@@ -2884,11 +2885,13 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">An introduction to <code>plasso</code></h1>
 <h4 class="author">Michael Knaus &amp; Stefan Glaisner</h4>
-<h4 class="date">SoSe 23</h4>
+<h4 class="date">June 14, 2023</h4>
 
 </div>
 
 
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
 <!-- rnb-text-begin -->
 <p>This notebook provides a detailed overview over the
 <code>plasso</code> package and its two main functions
@@ -2898,18 +2901,15 @@ standard function <code>glmnet</code> in its very basis.</p>
 <div id="getting-started" class="section level1">
 <h1>Getting started</h1>
 <p>Make sure that you install the package from its <a href="https://github.com/stefan-1997/plasso">Github page</a>. For the
-installation you will need the <code>devtools</code> package. The
-dependencies of <code>plasso</code> are: <code>glmnet</code>,
-<code>Matrix</code>, <code>methods</code>, <code>parallel</code>,
-<code>doParallel</code>, <code>foreach</code> and
-<code>iterators</code>.</p>
+installation you will need the <code>devtools</code> package. General
+dependencies are: <code>glmnet</code>, <code>Matrix</code>,
+<code>methods</code>, <code>parallel</code>, <code>doParallel</code>,
+<code>foreach</code> and <code>iterators</code>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5saWJyYXJ5KGRldnRvb2xzKVxuZGV2dG9vbHM6Omluc3RhbGxfZ2l0aHViKFwic3RlZmFuLTE5OTcvcGxhc3NvXCIpXG5cbmBgYCJ9 -->
-<pre class="r"><code>
-library(devtools)
-devtools::install_github(&quot;stefan-1997/plasso&quot;)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjpbImxpYnJhcnkoZGV2dG9vbHMpIiwiZGV2dG9vbHM6Omluc3RhbGxfZ2l0aHViKFwic3RlZmFuLTE5OTcvcGxhc3NvXCIpIl19 -->
+<pre class="r"><code>library(devtools)
+devtools::install_github(&quot;stefan-1997/plasso&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -2917,24 +2917,136 @@ devtools::install_github(&quot;stefan-1997/plasso&quot;)
 <code>library</code> function.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5saWJyYXJ5KHBsYXNzbylcblxuYGBgIn0= -->
+<pre class="r"><code>
+library(plasso)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The package generally provides two functions <code>plasso</code> and
+<code>cv.plasso</code> which are both built on top of the
+<code>glmnet</code> functionality. Specifically, a <code>glmnet</code>
+object lives within both functions and also in their outputs (list item
+<code>lasso_full</code>).</p>
+<p>The term <code>plasso</code> refers to a Post-Lasso model which
+estimates a least squares algorithm only for the active (i.e. non-zero)
+coefficients of a previously estimated Lasso models. This follows the
+idea that we want to do selection but without shrinkage.</p>
+<p>We will deal with some simulated data here.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5uID0gMTAwMFxucCA9IDIwXG54ID0gbWF0cml4KHJ1bmlmKG4qcCwtcGkscGkpLG5jb2w9cClcbnkgPSBydW5pZihuKVxudyA9IHJ1bmlmKG4pXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+n = 1000
+p = 20
+x = matrix(runif(n*p,-pi,pi),ncol=p)
+y = runif(n)
+w = runif(n)
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="plasso" class="section level1">
 <h1>plasso</h1>
-<p>tbd</p>
+<p><code>plasso</code> basically estimates least squares estimates for
+all lambda values of a standard <code>glmnet</code> object.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZml0X3BcblxuYGBgIn0= -->
+<pre class="r"><code>fit_p
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOiAgcGxhc3NvOjpjdi5wbGFzc28oeCA9IHgsIHkgPSB5LCB3ID0gdykgXG5cbiAgIERmICVEZXYgICAgTGFtYmRhIE1TRV9sYXNzbyBNU0VfcGxhc3NvXG4xICAgMCAwLjAwIDAuMDIxMTQwMCAgMC4wODM1OTEgICAwLjA4NDg5NFxuMiAgIDIgMC4xMiAwLjAxOTI2MDAgIDAuMDgzNjU3ICAgMC4wODQ5OTBcbjMgICAyIDAuMjcgMC4wMTc1NTAwICAwLjA4MzcwOSAgIDAuMDg0ODY4XG40ICAgMiAwLjQwIDAuMDE1OTkwMCAgMC4wODM3OTQgICAwLjA4NTQ2M1xuNSAgIDIgMC41MSAwLjAxNDU3MDAgIDAuMDgzODc4ICAgMC4wODU1MjJcbjYgICAzIDAuNjIgMC4wMTMyODAwICAwLjA4NDAwNSAgIDAuMDg2MzI2XG43ICAgNSAwLjc0IDAuMDEyMTAwMCAgMC4wODQxNzEgICAwLjA4Njk0OVxuOCAgIDcgMC45MyAwLjAxMTAyMDAgIDAuMDg0MzQ3ICAgMC4wODY5ODVcbjkgICA4IDEuMTEgMC4wMTAwNDAwICAwLjA4NDUwOCAgIDAuMDg2OTI0XG4xMCAgOSAxLjI5IDAuMDA5MTUwMCAgMC4wODQ2NTIgICAwLjA4NzE1NlxuMTEgMTAgMS40NSAwLjAwODMzODAgIDAuMDg0ODAwICAgMC4wODcwMDlcbjEyIDEwIDEuNTkgMC4wMDc1OTcwICAwLjA4NDkyNSAgIDAuMDg2OTQ2XG4xMyAxMyAxLjc1IDAuMDA2OTIyMCAgMC4wODUwMzIgICAwLjA4Njg2MVxuMTQgMTMgMS44OCAwLjAwNjMwNzAgIDAuMDg1MTM2ICAgMC4wODY3NjJcbjE1IDEzIDEuOTkgMC4wMDU3NDcwICAwLjA4NTIzNCAgIDAuMDg2NjczXG4xNiAxNCAyLjA4IDAuMDA1MjM2MCAgMC4wODUzMTkgICAwLjA4NjcxM1xuMTcgMTUgMi4xNyAwLjAwNDc3MTAgIDAuMDg1NDEwICAgMC4wODY4MzdcbjE4IDE1IDIuMjQgMC4wMDQzNDcwICAwLjA4NTUwMiAgIDAuMDg2NzY5XG4xOSAxNiAyLjMxIDAuMDAzOTYxMCAgMC4wODU1OTEgICAwLjA4Njc4M1xuMjAgMTYgMi4zNyAwLjAwMzYwOTAgIDAuMDg1NjY4ICAgMC4wODY2MDBcbjIxIDE2IDIuNDEgMC4wMDMyODgwICAwLjA4NTczMyAgIDAuMDg2NjI3XG4yMiAxNiAyLjQ1IDAuMDAyOTk2MCAgMC4wODU3OTUgICAwLjA4NjU5MFxuMjMgMTYgMi40OCAwLjAwMjczMDAgIDAuMDg1ODUzICAgMC4wODY2MDZcbjI0IDE3IDIuNTEgMC4wMDI0ODgwICAwLjA4NTkxMCAgIDAuMDg2NjI5XG4yNSAxNyAyLjUzIDAuMDAyMjY3MCAgMC4wODU5NjIgICAwLjA4NjYwOVxuMjYgMTcgMi41NSAwLjAwMjA2NTAgIDAuMDg2MDEzICAgMC4wODY2NzlcbjI3IDE3IDIuNTcgMC4wMDE4ODIwICAwLjA4NjA2NSAgIDAuMDg2Njc5XG4yOCAxNyAyLjU4IDAuMDAxNzE1MCAgMC4wODYxMTMgICAwLjA4NjY3MlxuMjkgMTkgMi41OSAwLjAwMTU2MjAgIDAuMDg2MTU4ICAgMC4wODY2OTRcbjMwIDE5IDIuNjAgMC4wMDE0MjQwICAwLjA4NjIwMiAgIDAuMDg2Njk0XG4zMSAxOSAyLjYxIDAuMDAxMjk3MCAgMC4wODYyNDIgICAwLjA4NjY4NFxuMzIgMTkgMi42MiAwLjAwMTE4MjAgIDAuMDg2MjgwICAgMC4wODY3MjRcbjMzIDE5IDIuNjIgMC4wMDEwNzcwICAwLjA4NjMxNyAgIDAuMDg2NzEwXG4zNCAxOSAyLjYzIDAuMDAwOTgxMiAgMC4wODYzNTAgICAwLjA4NjcwOFxuMzUgMTkgMi42MyAwLjAwMDg5NDAgIDAuMDg2MzgwICAgMC4wODY3MDhcbjM2IDE5IDIuNjQgMC4wMDA4MTQ2ICAwLjA4NjQwNyAgIDAuMDg2NzAxXG4zNyAxOSAyLjY0IDAuMDAwNzQyMiAgMC4wODY0MzIgICAwLjA4NjcwMFxuMzggMTkgMi42NCAwLjAwMDY3NjMgIDAuMDg2NDU1ICAgMC4wODY3MDBcbjM5IDE5IDIuNjQgMC4wMDA2MTYyICAwLjA4NjQ3NiAgIDAuMDg2NzAyXG40MCAxOSAyLjY0IDAuMDAwNTYxNSAgMC4wODY0OTUgICAwLjA4NjcwMlxuNDEgMTkgMi42NCAwLjAwMDUxMTYgIDAuMDg2NTEzICAgMC4wODY3MDJcbjQyIDE5IDIuNjUgMC4wMDA0NjYxICAwLjA4NjUyOSAgIDAuMDg2NzAyXG40MyAxOSAyLjY1IDAuMDAwNDI0NyAgMC4wODY1NDQgICAwLjA4NjcwMlxuNDQgMTkgMi42NSAwLjAwMDM4NzAgIDAuMDg2NTU4ICAgMC4wODY3MDRcbjQ1IDE5IDIuNjUgMC4wMDAzNTI2ICAwLjA4NjU3MSAgIDAuMDg2Njk5XG40NiAxOSAyLjY1IDAuMDAwMzIxMyAgMC4wODY1ODIgICAwLjA4NjcwMFxuNDcgMTkgMi42NSAwLjAwMDI5MjcgIDAuMDg2NTkyICAgMC4wODY3MDBcbjQ4IDE5IDIuNjUgMC4wMDAyNjY3ICAwLjA4NjYwMiAgIDAuMDg2NzAyXG40OSAxOSAyLjY1IDAuMDAwMjQzMCAgMC4wODY2MTAgICAwLjA4NjY5OVxuNTAgMTkgMi42NSAwLjAwMDIyMTUgIDAuMDg2NjE4ICAgMC4wODY2OTlcbjUxIDE5IDIuNjUgMC4wMDAyMDE4ICAwLjA4NjYyNSAgIDAuMDg2Njk5XG41MiAxOSAyLjY1IDAuMDAwMTgzOSAgMC4wODY2MzIgICAwLjA4NjcwMlxuNTMgMTkgMi42NSAwLjAwMDE2NzUgIDAuMDg2NjM4ICAgMC4wODY3MDJcbjU0IDE5IDIuNjUgMC4wMDAxNTI2ICAwLjA4NjY0NCAgIDAuMDg2NzAyXG41NSAyMCAyLjY1IDAuMDAwMTM5MSAgMC4wODY2NDkgICAwLjA4NjcwMlxuNTYgMjAgMi42NSAwLjAwMDEyNjcgIDAuMDg2NjUzICAgMC4wODY3MDNcbjU3IDIwIDIuNjUgMC4wMDAxMTU1ICAwLjA4NjY1OCAgIDAuMDg2NzAzXG41OCAyMCAyLjY1IDAuMDAwMTA1MiAgMC4wODY2NjIgICAwLjA4NjcwM1xuNTkgMjAgMi42NSAwLjAwMDA5NTkgIDAuMDg2NjY1ICAgMC4wODY3MDNcbjYwIDIwIDIuNjUgMC4wMDAwODc0ICAwLjA4NjY2OSAgIDAuMDg2NzAyXG42MSAyMCAyLjY1IDAuMDAwMDc5NiAgMC4wODY2NzIgICAwLjA4NjcwMlxuNjIgMjAgMi42NSAwLjAwMDA3MjUgIDAuMDg2Njc0ICAgMC4wODY3MDNcbjYzIDIwIDIuNjUgMC4wMDAwNjYxICAwLjA4NjY3NyAgIDAuMDg2NzAzXG4ifQ== -->
+<pre><code>
+Call:  plasso::cv.plasso(x = x, y = y, w = w) 
+
+   Df %Dev    Lambda MSE_lasso MSE_plasso
+1   0 0.00 0.0211400  0.083591   0.084894
+2   2 0.12 0.0192600  0.083657   0.084990
+3   2 0.27 0.0175500  0.083709   0.084868
+4   2 0.40 0.0159900  0.083794   0.085463
+5   2 0.51 0.0145700  0.083878   0.085522
+6   3 0.62 0.0132800  0.084005   0.086326
+7   5 0.74 0.0121000  0.084171   0.086949
+8   7 0.93 0.0110200  0.084347   0.086985
+9   8 1.11 0.0100400  0.084508   0.086924
+10  9 1.29 0.0091500  0.084652   0.087156
+11 10 1.45 0.0083380  0.084800   0.087009
+12 10 1.59 0.0075970  0.084925   0.086946
+13 13 1.75 0.0069220  0.085032   0.086861
+14 13 1.88 0.0063070  0.085136   0.086762
+15 13 1.99 0.0057470  0.085234   0.086673
+16 14 2.08 0.0052360  0.085319   0.086713
+17 15 2.17 0.0047710  0.085410   0.086837
+18 15 2.24 0.0043470  0.085502   0.086769
+19 16 2.31 0.0039610  0.085591   0.086783
+20 16 2.37 0.0036090  0.085668   0.086600
+21 16 2.41 0.0032880  0.085733   0.086627
+22 16 2.45 0.0029960  0.085795   0.086590
+23 16 2.48 0.0027300  0.085853   0.086606
+24 17 2.51 0.0024880  0.085910   0.086629
+25 17 2.53 0.0022670  0.085962   0.086609
+26 17 2.55 0.0020650  0.086013   0.086679
+27 17 2.57 0.0018820  0.086065   0.086679
+28 17 2.58 0.0017150  0.086113   0.086672
+29 19 2.59 0.0015620  0.086158   0.086694
+30 19 2.60 0.0014240  0.086202   0.086694
+31 19 2.61 0.0012970  0.086242   0.086684
+32 19 2.62 0.0011820  0.086280   0.086724
+33 19 2.62 0.0010770  0.086317   0.086710
+34 19 2.63 0.0009812  0.086350   0.086708
+35 19 2.63 0.0008940  0.086380   0.086708
+36 19 2.64 0.0008146  0.086407   0.086701
+37 19 2.64 0.0007422  0.086432   0.086700
+38 19 2.64 0.0006763  0.086455   0.086700
+39 19 2.64 0.0006162  0.086476   0.086702
+40 19 2.64 0.0005615  0.086495   0.086702
+41 19 2.64 0.0005116  0.086513   0.086702
+42 19 2.65 0.0004661  0.086529   0.086702
+43 19 2.65 0.0004247  0.086544   0.086702
+44 19 2.65 0.0003870  0.086558   0.086704
+45 19 2.65 0.0003526  0.086571   0.086699
+46 19 2.65 0.0003213  0.086582   0.086700
+47 19 2.65 0.0002927  0.086592   0.086700
+48 19 2.65 0.0002667  0.086602   0.086702
+49 19 2.65 0.0002430  0.086610   0.086699
+50 19 2.65 0.0002215  0.086618   0.086699
+51 19 2.65 0.0002018  0.086625   0.086699
+52 19 2.65 0.0001839  0.086632   0.086702
+53 19 2.65 0.0001675  0.086638   0.086702
+54 19 2.65 0.0001526  0.086644   0.086702
+55 20 2.65 0.0001391  0.086649   0.086702
+56 20 2.65 0.0001267  0.086653   0.086703
+57 20 2.65 0.0001155  0.086658   0.086703
+58 20 2.65 0.0001052  0.086662   0.086703
+59 20 2.65 0.0000959  0.086665   0.086703
+60 20 2.65 0.0000874  0.086669   0.086702
+61 20 2.65 0.0000796  0.086672   0.086702
+62 20 2.65 0.0000725  0.086674   0.086703
+63 20 2.65 0.0000661  0.086677   0.086703</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
 <div id="cv.plasso" class="section level1">
 <h1>cv.plasso</h1>
 <p>tbd</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5maXRfcCA9IHBsYXNzbzo6Y3YucGxhc3NvKHgseSx3KVxucHJpbnQocClcblxuYGBgIn0= -->
+<pre class="r"><code>
+fit_p = plasso::cv.plasso(x,y,w)
+print(p)
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFuIGludHJvZHVjdGlvbiB0byBgcGxhc3NvYCINCmF1dGhvcjogIk1pY2hhZWwgS25hdXMgJiBTdGVmYW4gR2xhaXNuZXIiDQpkYXRlOiAiU29TZSAyMyINCm91dHB1dDogDQogIGh0bWxfbm90ZWJvb2s6DQogICAgdG9jOiB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgY29kZV9mb2xkaW5nOiBzaG93DQotLS0NCg0KVGhpcyBub3RlYm9vayBwcm92aWRlcyBhIGRldGFpbGVkIG92ZXJ2aWV3IG92ZXIgdGhlIGBwbGFzc29gIHBhY2thZ2UgYW5kIGl0cyB0d28gbWFpbiBmdW5jdGlvbnMgYHBsYXNzb2AgYW5kIGBjdi5wbGFzc29gLiBUaGlzIHBhY2thZ2UgaXMgc3Ryb25nbHkgb3JpZW50ZWQgYXJvdW5kIHRoZSBgZ2xtbmV0YCBwYWNrYWdlIGFuZCByZXN0cyBvbiBpdHMgc3RhbmRhcmQgZnVuY3Rpb24gYGdsbW5ldGAgaW4gaXRzIHZlcnkgYmFzaXMuDQoNCg0KIyBHZXR0aW5nIHN0YXJ0ZWQNCg0KTWFrZSBzdXJlIHRoYXQgeW91IGluc3RhbGwgdGhlIHBhY2thZ2UgZnJvbSBpdHMgW0dpdGh1YiBwYWdlXShodHRwczovL2dpdGh1Yi5jb20vc3RlZmFuLTE5OTcvcGxhc3NvKS4gRm9yIHRoZSBpbnN0YWxsYXRpb24geW91IHdpbGwgbmVlZCB0aGUgYGRldnRvb2xzYCBwYWNrYWdlLiBUaGUgZGVwZW5kZW5jaWVzIG9mIGBwbGFzc29gIGFyZTogYGdsbW5ldGAsIGBNYXRyaXhgLCBgbWV0aG9kc2AsIGBwYXJhbGxlbGAsIGBkb1BhcmFsbGVsYCwgYGZvcmVhY2hgIGFuZCBgaXRlcmF0b3JzYC4NCg0KYGBge3J9DQoNCmxpYnJhcnkoZGV2dG9vbHMpDQpkZXZ0b29sczo6aW5zdGFsbF9naXRodWIoInN0ZWZhbi0xOTk3L3BsYXNzbyIpDQoNCmBgYA0KDQpUaGVuLCBgcGxhc3NvYCBjYW4gYmUgbG9hZGVkIHZpYSB0aGUgc3RhbmRhcmQgYGxpYnJhcnlgIGZ1bmN0aW9uLg0KDQpgYGB7cn0NCg0KbGlicmFyeShwbGFzc28pDQoNCmBgYA0KDQoNCg0KIyBwbGFzc28NCg0KdGJkDQoNCiMgY3YucGxhc3NvDQoNCnRiZA0KDQpgYGB7cn0NCg0KYGBgDQoNCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFuIGludHJvZHVjdGlvbiB0byBgcGxhc3NvYCINCmF1dGhvcjogIk1pY2hhZWwgS25hdXMgJiBTdGVmYW4gR2xhaXNuZXIiDQpkYXRlOiAiYHIgZm9ybWF0KFN5cy50aW1lKCksICclQiAlZCwgJVknKWAiDQpvdXRwdXQ6IA0KICBodG1sX25vdGVib29rOg0KICAgIHRvYzogdHJ1ZQ0KICAgIHRvY19mbG9hdDogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KLS0tDQoNCmBgYHtyLCBpbmNsdWRlPUZBTFNFfQ0KDQpob29rX291dHB1dCA8LSBrbml0cjo6a25pdF9ob29rcyRnZXQoIm91dHB1dCIpDQoNCmtuaXRyOjprbml0X2hvb2tzJHNldChvdXRwdXQgPSBmdW5jdGlvbih4LCBvcHRpb25zKSB7DQogIGlmICghaXMubnVsbChuIDwtIG9wdGlvbnMkb3V0LmxpbmVzKSkgew0KICAgIHggPC0geGZ1bjo6c3BsaXRfbGluZXMoeCkNCiAgICBpZiAobGVuZ3RoKHgpID4gbikgew0KICAgICAgeCA8LSBjKGhlYWQoeCwgbiksICIuLi4uXG4iKQ0KICAgIH0NCiAgICB4IDwtIHBhc3RlKHgsIGNvbGxhcHNlID0gIlxuIikNCiAgfQ0KICBob29rX291dHB1dCh4LCBvcHRpb25zKQ0KfSkNCg0KYGBgDQoNClRoaXMgbm90ZWJvb2sgcHJvdmlkZXMgYSBkZXRhaWxlZCBvdmVydmlldyBvdmVyIHRoZSBgcGxhc3NvYCBwYWNrYWdlIGFuZCBpdHMgdHdvIG1haW4gZnVuY3Rpb25zIGBwbGFzc29gIGFuZCBgY3YucGxhc3NvYC4gVGhpcyBwYWNrYWdlIGlzIHN0cm9uZ2x5IG9yaWVudGVkIGFyb3VuZCB0aGUgYGdsbW5ldGAgcGFja2FnZSBhbmQgcmVzdHMgb24gaXRzIHN0YW5kYXJkIGZ1bmN0aW9uIGBnbG1uZXRgIGluIGl0cyB2ZXJ5IGJhc2lzLg0KDQoNCiMgR2V0dGluZyBzdGFydGVkDQoNCk1ha2Ugc3VyZSB0aGF0IHlvdSBpbnN0YWxsIHRoZSBwYWNrYWdlIGZyb20gaXRzIFtHaXRodWIgcGFnZV0oaHR0cHM6Ly9naXRodWIuY29tL3N0ZWZhbi0xOTk3L3BsYXNzbykuIEZvciB0aGUgaW5zdGFsbGF0aW9uIHlvdSB3aWxsIG5lZWQgdGhlIGBkZXZ0b29sc2AgcGFja2FnZS4gR2VuZXJhbCBkZXBlbmRlbmNpZXMgYXJlOiBgZ2xtbmV0YCwgYE1hdHJpeGAsIGBtZXRob2RzYCwgYHBhcmFsbGVsYCwgYGRvUGFyYWxsZWxgLCBgZm9yZWFjaGAgYW5kIGBpdGVyYXRvcnNgLg0KDQpgYGB7ciwgZXZhbD1GQUxTRX0NCg0KbGlicmFyeShkZXZ0b29scykNCmRldnRvb2xzOjppbnN0YWxsX2dpdGh1Yigic3RlZmFuLTE5OTcvcGxhc3NvIikNCg0KYGBgDQoNClRoZW4sIGBwbGFzc29gIGNhbiBiZSBsb2FkZWQgdmlhIHRoZSBzdGFuZGFyZCBgbGlicmFyeWAgZnVuY3Rpb24uDQoNCmBgYHtyfQ0KDQpsaWJyYXJ5KHBsYXNzbykNCg0KYGBgDQoNClRoZSBwYWNrYWdlIGdlbmVyYWxseSBwcm92aWRlcyB0d28gZnVuY3Rpb25zIGBwbGFzc29gIGFuZCBgY3YucGxhc3NvYCB3aGljaCBhcmUgYm90aCBidWlsdCBvbiB0b3Agb2YgdGhlIGBnbG1uZXRgIGZ1bmN0aW9uYWxpdHkuIFNwZWNpZmljYWxseSwgYSBgZ2xtbmV0YCBvYmplY3QgbGl2ZXMgd2l0aGluIGJvdGggZnVuY3Rpb25zIGFuZCBhbHNvIGluIHRoZWlyIG91dHB1dHMgKGxpc3QgaXRlbSBgbGFzc29fZnVsbGApLg0KDQpUaGUgdGVybSBgcGxhc3NvYCByZWZlcnMgdG8gYSBQb3N0LUxhc3NvIG1vZGVsIHdoaWNoIGVzdGltYXRlcyBhIGxlYXN0IHNxdWFyZXMgYWxnb3JpdGhtIG9ubHkgZm9yIHRoZSBhY3RpdmUgKGkuZS4gbm9uLXplcm8pIGNvZWZmaWNpZW50cyBvZiBhIHByZXZpb3VzbHkgZXN0aW1hdGVkIExhc3NvIG1vZGVscy4gVGhpcyBmb2xsb3dzIHRoZSBpZGVhIHRoYXQgd2Ugd2FudCB0byBkbyBzZWxlY3Rpb24gYnV0IHdpdGhvdXQgc2hyaW5rYWdlLg0KDQpXZSB3aWxsIGRlYWwgd2l0aCBzb21lIHNpbXVsYXRlZCBkYXRhIGhlcmUuDQoNCmBgYHtyfQ0KDQpuID0gMTAwMA0KcCA9IDIwDQp4ID0gbWF0cml4KHJ1bmlmKG4qcCwtcGkscGkpLG5jb2w9cCkNCnkgPSBydW5pZihuKQ0KdyA9IHJ1bmlmKG4pDQoNCmBgYA0KDQojIHBsYXNzbw0KDQpgcGxhc3NvYCBiYXNpY2FsbHkgZXN0aW1hdGVzIGxlYXN0IHNxdWFyZXMgZXN0aW1hdGVzIGZvciBhbGwgbGFtYmRhIHZhbHVlcyBvZiBhIHN0YW5kYXJkIGBnbG1uZXRgIG9iamVjdC4NCg0KYGBge3Igb3V0LmxpbmVzPTEwfQ0KDQpmaXRfcCA9IHBsYXNzbzo6Y3YucGxhc3NvKHgseSx3KQ0KZml0X3ANCg0KYGBgDQoNCiMgY3YucGxhc3NvDQoNCnRiZA0KDQpgYGB7cn0NCg0KZml0X3AgPSBwbGFzc286OmN2LnBsYXNzbyh4LHksdykNCnByaW50KHApDQoNCmBgYA0KDQoNCg==</div>
 
 
 </div>

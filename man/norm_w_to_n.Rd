@@ -7,7 +7,7 @@
 norm_w_to_n(w, d = NULL)
 }
 \arguments{
-\item{w}{Vector of weights that should be normalized}
+\item{w}{Vector or n x 1 matrix of weights that should be normalized}
 
 \item{d}{Vector of treatment indicators}
 }

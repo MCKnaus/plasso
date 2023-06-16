@@ -37,7 +37,7 @@ fitted_values_cv = function (XtX_all,Xty_all,x_pred,nm_act) {
 #' @description
 #' \emph{norm_w_to_n()} normalizes weights either to N or to N in treated and controls separately.
 #' 
-#' @param w Vector of weights that should be normalized
+#' @param w Vector or n x 1 matrix of weights that should be normalized
 #' @param d Vector of treatment indicators
 #'
 #' @return Normalized weights.
@@ -45,20 +45,24 @@ fitted_values_cv = function (XtX_all,Xty_all,x_pred,nm_act) {
 #' @keywords internal
 #'
 norm_w_to_n = function(w,d=NULL) {
-  if (is.null(d)) {
-    ## Normalize weights to sum up to N
-    w = w / sum(w) * nrow(w)
+  if (is.numeric(w) & (is.numeric(w) | is.matrix(w))){
+    w = as.matrix(w)
+    if (is.null(d)) {
+      w = w / sum(w) * nrow(w)
+    } else {
+      # Separate weights of treated and controls
+      w1 = w * d
+      w0 = w * (1-d)
+      # Normalize weights to sum to N in both groups
+      w1 = w1 / sum(w1) * nrow(w)
+      w0 = w0 / sum(w0) * nrow(w)
+      # Unify weights again
+      w = w1 + w0
+      return(w)
+    }
   } else {
-    # Separate weights of treated and controls
-    w1 = w * d
-    w0 = w * (1-d)
-    # Normalize weights to sum to N in both groups
-    w1 = w1 / sum(w1) * nrow(w)
-    w0 = w0 / sum(w0) * nrow(w)
-    # Unify weights again
-    w = w1 + w0
+    stop("Weights do not have the required format (vector or n x 1 matrix)")
   }
-  return(w)
 }
 
 
@@ -119,7 +123,7 @@ add_intercept = function(mat) {
 #' @description
 #' \emph{handle_weights()} cleans potential sample weights or codes them as ones if they are not specified.
 #' 
-#' @param w Vector of weights or null if no weights provided
+#' @param w Vector or n x 1 matrix of weights or null if no weights provided
 #' @param n Number of observations
 #'
 #' @return Vector of weights.
