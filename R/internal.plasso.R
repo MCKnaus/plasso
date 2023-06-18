@@ -83,14 +83,16 @@ norm_w_to_n = function(w,d=NULL) {
 find_Xse_ind = function(CV,ind_min,oneSE,factor) {
   cv_temp = CV - (CV[ind_min] + abs(factor) * oneSE[ind_min])
   if (factor < 0) {
+    if (ind_min == 1) return(ind_min)
     for (i in ind_min:1) {
-      ind = i
+      ind = i+1
       if (cv_temp[i] < 0) next
       else if (cv_temp[i] > 0) break
     }
   } else if (factor > 0) {
-    for (i in ind_min:length(oneSE)) {
-      ind = i
+    if (ind_min == length(CV)) return(ind_min)
+    for (i in ind_min:length(CV)) {
+      ind = i-1
       if (cv_temp[i] < 0) next
       else if (cv_temp[i] > 0) break
     }
