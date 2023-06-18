@@ -4,7 +4,7 @@
 #' \emph{fitted_values_cv()} extracts a subset of active variables (nm_act) of the
 #' relevant variables from X'X and X'y to get out-of-sample predictions
 #' for a matrix containing only the active variables.
-#' This speeds up the cross-validation for Post-Lasso to a large extent.
+#' The function is only relevant for cases where at least one variable is selected.
 #'
 #' @param XtX_all Crossproduct of all covariates
 #' @param Xty_all Crossproduct of covariates and outcome
@@ -173,16 +173,17 @@ handle_weights = function(w,n) {
 #'
 fit_betas = function(x,y,w,nm_act,coef_lasso) {
   if (length(nm_act) == 1){
-    xact = as.matrix(x[,nm_act])
-    XtX = crossprod(xact)
-    Xty = crossprod(xact,y)
+    xact_w = x[,nm_act] * sqrt(w)
+    xact_w = as.matrix(xact_w)
   } else {
     xact = x[,nm_act]
     xact_w = apply(xact,2,`*`,sqrt(w))
-    y_w = y * sqrt(w)
-    XtX = crossprod(xact_w)
-    Xty = crossprod(xact_w,y_w)
   }
+  
+  y_w = y * sqrt(w)
+  XtX = crossprod(xact_w)
+  Xty = crossprod(xact_w,y_w)
+
   beta_plasso = solve(XtX, Xty)
   beta_plasso = unlist(beta_plasso[,1])
   coef_plasso = coef_lasso

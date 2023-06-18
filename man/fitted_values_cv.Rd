@@ -22,6 +22,6 @@ Fitted values in the prediction sample.
 \emph{fitted_values_cv()} extracts a subset of active variables (nm_act) of the
 relevant variables from X'X and X'y to get out-of-sample predictions
 for a matrix containing only the active variables.
-This speeds up the cross-validation for Post-Lasso to a large extent.
+The function is only relevant for cases where at least one variable is selected.
 }
 \keyword{internal}
