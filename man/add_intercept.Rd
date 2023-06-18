@@ -7,7 +7,7 @@
 add_intercept(mat)
 }
 \arguments{
-\item{mat}{Any matrix}
+\item{mat}{Any matrix (with column names).}
 }
 \value{
 Matrix with intercept.
