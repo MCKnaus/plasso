@@ -31,3 +31,13 @@ test_that("norm_w_to_n handles matrix weights (with treatment indicators)", {
   expect_equal(sum(result), nrow(w)*2)
   expect_identical(result, as.matrix(c(1.5, 3, 1.5)))
 })
+
+test_that("norm_w_to_n handles negative weights - warning", {
+  w = c(1,2,-3,4,5)
+  w_r =  c(1,2,1,4,5)
+  
+  expected = w_r / sum(w_r) * length(w)
+  
+  expect_warning(result <- norm_w_to_n(w), "Negative weights were replaced by the minimum non-negative weight value")
+  expect_equal(result, as.matrix(expected))
+})

@@ -47,6 +47,12 @@ fitted_values_cv = function (XtX_all,Xty_all,x_pred,nm_act) {
 norm_w_to_n = function(w,d=NULL) {
   if (is.numeric(w) & (is.numeric(w) | is.matrix(w))){
     w = as.matrix(w)
+    # Check for negative weights
+    if (any(w < 0)) {
+      min_pos_weight = min(w[w >= 0])
+      w[w < 0] = min_pos_weight
+      warning("Negative weights were replaced by the minimum non-negative weight value")
+    }
     if (is.null(d)) {
       w = w / sum(w) * nrow(w)
     } else {
