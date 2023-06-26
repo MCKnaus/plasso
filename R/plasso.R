@@ -114,10 +114,9 @@ summary.plasso = function(object,...) {
 #'
 #' @param object Fitted \code{\link[plasso]{plasso}} model object
 #' @param ... Pass generic \code{\link[stats]{predict}} options
-#' @param xnew Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
+#' @param newx Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
 #' @param type Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.
 #' @param s If Null, prediction is done for all lambda values. If a value is provided, the closest lambda value of the plasso object is used.
-#' @param weights Vector of weights. This argument is not used for default type="response".
 #' 
 #' @return Returns predictions of coefficients or fitted values for all lambda values or a particular one.
 #'
@@ -127,36 +126,41 @@ summary.plasso = function(object,...) {
 #'
 predict.plasso = function(object,
                           ...,
-                          xnew=NULL,
+                          newx=NULL,
                           type=c("response","coefficients"),
-                          s=NULL,
-                          weights=NULL
+                          s=NULL
                           ) {
   
   plasso = object
   type = match.arg(type)
   
-  if (is.null(xnew)) x = plasso$x else x = xnew
+  if (is.null(newx)) x = plasso$x else x = newx
   if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
   x = add_intercept(x)
   y = plasso$y
-  w = handle_weights(w,nrow(x))
+  lambda_names = names(plasso$lasso_full$a0)
   
   if (is.null(s)) {
     
     l = length(plasso$lasso_full$lambda)
     
     coef_lasso = as.matrix(coef(plasso$lasso_full))
+    colnames(coef_lasso) = lambda_names
     coef_plasso = as.matrix(plasso$beta_plasso)
+    colnames(coef_plasso) = lambda_names
     
     if (type == "coefficients") {
       
-      return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
+      return(list(
+        "lasso"=as(coef_lasso,"dgCMatrix"),
+        "plasso"=as(coef_plasso,"dgCMatrix")
+        )
+      )
       
     } else if (type == "response"){
       
-      fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),1:l))
-      fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),1:l))
+      fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(NULL,lambda_names))
+      fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(NULL,lambda_names))
       
       for (i in 1:l) {
         
@@ -173,17 +177,26 @@ predict.plasso = function(object,
     closest_index = which.min(abs_diff)
     closest_lambda = plasso$lasso_full$lambda[closest_index]
     
-    coef_lasso = coef(plasso$lasso_full)[,closest_index]
-    coef_plasso = plasso$beta_plasso[,closest_index]
+    coef_lasso = as.matrix(coef(plasso$lasso_full)[,closest_index])
+    colnames(coef_lasso) = lambda_names[2]
+    coef_plasso = as.matrix(plasso$beta_plasso[,closest_index])
+    colnames(coef_plasso) = lambda_names[2]
+    
 
     if (type == "coefficients") {
       
-      return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
+      return(list(
+        "lasso"=as(coef_lasso,"dgCMatrix"),
+        "plasso"=as(coef_plasso,"dgCMatrix")
+        )
+      )
       
     } else if (type == "response"){
       
-      fit_lasso = x %*% coef_lasso
-      fit_plasso = x %*% coef_plasso 
+      fit_lasso = as.matrix(x %*% coef_lasso)
+      fit_plasso = as.matrix(x %*% coef_plasso)
+      colnames(fit_lasso) = lambda_names[2]
+      colnames(fit_plasso) = lambda_names[2]
       
       return(list("lasso"=fit_lasso,"plasso"=fit_plasso))
       
@@ -200,7 +213,6 @@ predict.plasso = function(object,
 #' @param object \code{\link[plasso]{plasso}} object
 #' @param ... Pass generic \code{\link[stats]{coef}} options
 #' @param s If Null, coefficients are returned for all lambda values. If a value is provided, the closest lambda value of the plasso object is used.
-#' @param weights Vector of weights for fitting coefficients.
 #' 
 #' @return List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
 #'
@@ -208,8 +220,8 @@ predict.plasso = function(object,
 #'
 #' @export 
 #' 
-coef.plasso = function(object,...,s=NULL,weights=NULL){
-  return(predict(object,...,s=s,type="coefficients",weights=weights))
+coef.plasso = function(object,...,s=NULL){
+  return(predict(object,...,s=s,type="coefficients"))
 }
 
 

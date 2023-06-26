@@ -7,10 +7,9 @@
 \method{predict}{cv.plasso}(
   object,
   ...,
-  xnew = NULL,
+  newx = NULL,
   type = c("response", "coefficients"),
   s = c("optimal", "all"),
-  weights = NULL,
   se_rule = 0
 )
 }
@@ -19,13 +18,11 @@
 
 \item{...}{Pass generic \code{\link[stats]{predict}} options}
 
-\item{xnew}{Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".}
+\item{newx}{Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".}
 
 \item{type}{Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.}
 
 \item{s}{Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.}
-
-\item{weights}{Vector of weights. This argument is not used for default type="response".}
 
 \item{se_rule}{Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
 models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models

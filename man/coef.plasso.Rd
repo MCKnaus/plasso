@@ -4,7 +4,7 @@
 \alias{coef.plasso}
 \title{Extract coefficients from a plasso object}
 \usage{
-\method{coef}{plasso}(object, ..., s = NULL, weights = NULL)
+\method{coef}{plasso}(object, ..., s = NULL)
 }
 \arguments{
 \item{object}{\code{\link[plasso]{plasso}} object}
@@ -12,8 +12,6 @@
 \item{...}{Pass generic \code{\link[stats]{coef}} options}
 
 \item{s}{If Null, coefficients are returned for all lambda values. If a value is provided, the closest lambda value of the plasso object is used.}
-
-\item{weights}{Vector of weights for fitting coefficients.}
 }
 \value{
 List containing matrices or vector of coefficients for both Lasso and Post-Lasso.

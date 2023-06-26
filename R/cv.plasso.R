@@ -113,7 +113,7 @@ cv.plasso = function(x,y,
                 "lambda_min_l"=lambda[ind_min_l],"lambda_min_pl"=lambda[ind_min_pl],
                 "names_l"=names_l,"names_pl"=names_pl,
                 "coef_min_l"=coef_min_l,"coef_min_pl"=coef_min_pl,
-                "x"=x,"y"=y)
+                "x"=x,"y"=y,"w"=w)
   
   class(output) = "cv.plasso"
   return(output)
@@ -233,10 +233,9 @@ print.summary.cv.plasso = function(x,...,digits=max(3L, getOption("digits") - 3L
 #'
 #' @param object Fitted \code{\link[plasso]{cv.plasso}} model object
 #' @param ... Pass generic \code{\link[stats]{predict}} options
-#' @param xnew Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
+#' @param newx Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
 #' @param type Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.
 #' @param s Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.
-#' @param weights Vector of weights. This argument is not used for default type="response".
 #' @param se_rule Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
 #' models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
 #' (e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".
@@ -249,10 +248,9 @@ print.summary.cv.plasso = function(x,...,digits=max(3L, getOption("digits") - 3L
 #'
 predict.cv.plasso = function(object,
                              ...,
-                             xnew=NULL,
+                             newx=NULL,
                              type=c("response","coefficients"),
                              s=c("optimal","all"),
-                             weights=NULL,
                              se_rule=0) {
   
   plasso = object
@@ -260,11 +258,12 @@ predict.cv.plasso = function(object,
   type = match.arg(type)
   s = match.arg(s)
   
-  if (is.null(xnew)) x = plasso$x else x = xnew
+  if (is.null(newx)) x = plasso$x else x = newx
   if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
   x = add_intercept(x)
   y = plasso$y
-  w = handle_weights(w,nrow(x))
+  w = handle_weights(plasso$w,nrow(x))
+  lambda_names = names(plasso$lasso_full$a0)
   
   if (s == "optimal") {
     
@@ -275,22 +274,30 @@ predict.cv.plasso = function(object,
     ind_Xse_l = find_Xse_ind(plasso$mean_MSE_lasso,plasso$ind_min_l,oneSE_lasso,se_rule)
     ind_Xse_pl = find_Xse_ind(plasso$mean_MSE_plasso,plasso$ind_min_pl,oneSE_plasso,se_rule)
     
-    coef_lasso = coef(plasso$lasso_full)[,ind_Xse_l]
+    coef_lasso = as.matrix(coef(plasso$lasso_full)[,ind_Xse_l])
+    colnames(coef_lasso) = paste0("optimal(",se_rule,")")
     
     nm_act = names(coef(plasso$lasso_full)[,ind_Xse_pl])[which(coef(plasso$lasso_full)[,ind_Xse_pl] != 0)]
-    coef_plasso = fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,ind_Xse_pl])
+    coef_plasso = as.matrix(fit_betas(x,y,w,nm_act,coef(plasso$lasso_full)[,ind_Xse_pl]))
+    colnames(coef_plasso) = paste0("optimal(",se_rule,")")
     
     if (type == "coefficients") {
       
-      return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
+      return(list(
+        "lasso"=as(coef_lasso,"dgCMatrix"),
+        "plasso"=as(coef_plasso,"dgCMatrix")
+        )
+      )
       
     } else if (type == "response"){
       
       # Fitted values for lasso
-      fit_lasso = x %*% coef_lasso
+      fit_lasso = as.matrix(x %*% coef_lasso)
+      colnames(fit_lasso) = paste0("optimal(",se_rule,")")
       
       # Fitted values for post lasso
-      fit_plasso = x %*% coef_plasso 
+      fit_plasso = as.matrix(x %*% coef_plasso)
+      colnames(fit_plasso) = paste0("optimal(",se_rule,")")
       
       return(list("lasso"=fit_lasso,"plasso"=fit_plasso))
       
@@ -311,12 +318,16 @@ predict.cv.plasso = function(object,
     
     if (type == "coefficients") {
       
-      return(list("lasso"=coef_lasso,"plasso"=coef_plasso))
+      return(list(
+        "lasso"=as(coef_lasso,"dgCMatrix"),
+        "plasso"=as(coef_plasso,"dgCMatrix")
+      )
+      )
       
     } else if (type == "response"){
       
-      fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),colnames(coef_lasso)))
-      fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(1:nrow(x),colnames(coef_lasso)))
+      fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(NULL,colnames(coef_lasso)))
+      fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(NULL,colnames(coef_lasso)))
       
       for (i in 1:l) {
         
@@ -342,7 +353,6 @@ predict.cv.plasso = function(object,
 #' @param se_rule Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
 #' models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
 #' (e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".
-#' @param weights Vector of weights for fitting coefficients.
 #' 
 #' @return List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
 #'
@@ -350,8 +360,8 @@ predict.cv.plasso = function(object,
 #'
 #' @export 
 #' 
-coef.cv.plasso = function(object,...,s=c("optimal","all"),se_rule=0,weights=NULL){
-  return(predict(object,...,s=s,se_rule=se_rule,type="coefficients",weights=weights))
+coef.cv.plasso = function(object,...,s=c("optimal","all"),se_rule=0){
+  return(predict(object,...,s=s,se_rule=se_rule,type="coefficients"))
 }
 
 

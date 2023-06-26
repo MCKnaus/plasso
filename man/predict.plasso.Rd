@@ -7,10 +7,9 @@
 \method{predict}{plasso}(
   object,
   ...,
-  xnew = NULL,
+  newx = NULL,
   type = c("response", "coefficients"),
-  s = NULL,
-  weights = NULL
+  s = NULL
 )
 }
 \arguments{
@@ -18,13 +17,11 @@
 
 \item{...}{Pass generic \code{\link[stats]{predict}} options}
 
-\item{xnew}{Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".}
+\item{newx}{Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".}
 
 \item{type}{Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.}
 
 \item{s}{If Null, prediction is done for all lambda values. If a value is provided, the closest lambda value of the plasso object is used.}
-
-\item{weights}{Vector of weights. This argument is not used for default type="response".}
 }
 \value{
 Returns predictions of coefficients or fitted values for all lambda values or a particular one.
