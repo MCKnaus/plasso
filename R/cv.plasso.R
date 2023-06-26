@@ -258,9 +258,13 @@ predict.cv.plasso = function(object,
   type = match.arg(type)
   s = match.arg(s)
   
-  if (is.null(newx)) x = plasso$x else x = newx
+  x = plasso$x
+  if ( is.null(newx) ) newx = x
   if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
+  colnames(newx) = colnames(x)
   x = add_intercept(x)
+  newx = add_intercept(newx)
+  
   y = plasso$y
   w = handle_weights(plasso$w,nrow(x))
   lambda_names = names(plasso$lasso_full$a0)
@@ -292,11 +296,11 @@ predict.cv.plasso = function(object,
     } else if (type == "response"){
       
       # Fitted values for lasso
-      fit_lasso = as.matrix(x %*% coef_lasso)
+      fit_lasso = as.matrix(newx %*% coef_lasso)
       colnames(fit_lasso) = paste0("optimal(",se_rule,")")
       
       # Fitted values for post lasso
-      fit_plasso = as.matrix(x %*% coef_plasso)
+      fit_plasso = as.matrix(newx %*% coef_plasso)
       colnames(fit_plasso) = paste0("optimal(",se_rule,")")
       
       return(list("lasso"=fit_lasso,"plasso"=fit_plasso))
@@ -326,13 +330,13 @@ predict.cv.plasso = function(object,
       
     } else if (type == "response"){
       
-      fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(NULL,colnames(coef_lasso)))
-      fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(NULL,colnames(coef_lasso)))
+      fit_lasso = matrix(NA,nrow=nrow(newx),ncol=l,dimnames=list(NULL,colnames(coef_lasso)))
+      fit_plasso = matrix(NA,nrow=nrow(newx),ncol=l,dimnames=list(NULL,colnames(coef_lasso)))
       
       for (i in 1:l) {
         
-        fit_lasso[,i] = x %*% coef_lasso[,i]
-        fit_plasso[,i] = x %*% coef_plasso[,i]
+        fit_lasso[,i] = newx %*% coef_lasso[,i]
+        fit_plasso[,i] = newx %*% coef_plasso[,i]
       }
       
       return(list("lasso"=fit_lasso,"plasso"=fit_plasso))
