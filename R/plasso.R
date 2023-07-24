@@ -26,11 +26,22 @@
 #' @export
 #' 
 #' @examples
+#' # load toeplitz data
 #' data(toeplitz)
+#' # extract target and features from data
 #' y = as.matrix(toeplitz[,1])
 #' X = toeplitz[,-1]
+#' # fit plasso to the data
 #' \donttest{p = plasso::plasso(X,y)}
-#' \donttest{plot(p, xvar="lambda")}
+#' # plot coefficient paths for Post-Lasso model
+#' \donttest{plot(p, lasso=FALSE, xvar="lambda")}
+#' # plot coefficient paths for Lasso model
+#' \donttest{plot(p, lasso=TRUE, xvar="lambda")}
+#' # get coefficients for specific lambda approximation
+#' \donttest{coef(p, s=0.0001)}
+#' # predict fitted values along whole lambda sequence 
+#' \donttest{pred = predict(p)}
+#' \donttest{head(pred$plasso)}
 #'
 plasso = function(x,y,
                   w=NULL,

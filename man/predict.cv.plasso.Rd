@@ -25,8 +25,8 @@
 \item{s}{Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.}
 
 \item{se_rule}{Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
-models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
-(e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".}
+models, positive values go in the direction of larger models (e.g. se_rule=-1 creates the standard 1SE rule).
+This argument is not used for s="all".}
 }
 \value{
 Returns predictions of coefficients or fitted values for all lambda values or the optimal one.

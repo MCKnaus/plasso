@@ -44,11 +44,23 @@ List object including base \code{\link[glmnet]{glmnet}} object and cross-validat
 \emph{cv.plasso()} uses the \code{\link[glmnet]{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
 }
 \examples{
+# load toeplitz data
 data(toeplitz)
+# extract target and features from data
 y = as.matrix(toeplitz[,1])
 X = toeplitz[,-1]
+# fit cv.plasso to the data
 \donttest{p.cv = plasso::cv.plasso(X,y)}
+# get basic summary statistics
 \donttest{print(summary(p.cv, default=FALSE))}
+# plot cross-validated MSE curves and number of active coefficients
 \donttest{plot(p.cv, legend_pos="left")}
+# get coefficients at MSE optimal lambda value for both Lasso and Post-Lasso model
+\donttest{coef(p.cv)}
+# get coefficients at MSE optimal lambda value according to 1-Standard-Error rule (i.e. favoring more parsimonious models)
+\donttest{coef(p.cv, se_rule=-1)}
+# predict fitted values along whole lambda sequence 
+\donttest{pred = predict(p.cv, s="all")}
+\donttest{head(pred$plasso)}
 
 }
