@@ -240,8 +240,8 @@ test_that("predict.cv.plasso response for s=optimal", {
   expect_equal(as.matrix(coef_p[["plasso"]]),coef_lm)
   
   
-  pred_g = predict(p$lasso_full,newx=X_pred,s=p$ind_min_l)
-  coef_g = coef(p$lasso_full,s=p$ind_min_l)
+  pred_g = predict(p$lasso_full,newx=X_pred,s=p$lasso_full$lambda[p$ind_min_l])
+  coef_g = coef(p$lasso_full,s=p$lasso_full$lambda[p$ind_min_l])
   colnames(pred_g) = "optimal(0)"
   colnames(coef_g) = "optimal(0)"
   
