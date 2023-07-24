@@ -16,9 +16,23 @@ plasso(x, y, w = NULL, ...)
 \item{...}{Pass \code{\link[glmnet]{glmnet}} options}
 }
 \value{
-List including glmnet object and names of selected variables at cross-validated minima for Lasso and Post-Lasso.
+List including base \code{\link[glmnet]{glmnet}} (i.e. Lasso) object and Post-Lasso coefficients.
+\item{call}{the call that produced this}
+\item{lasso_full}{base \code{\link[glmnet]{glmnet}} object}
+\item{beta_plasso}{matrix of coefficients for Post-Lasso model stored in sparse column format}
+\item{x}{Input matrix of covariates}
+\item{y}{Matrix of outcomes}
+\item{w}{Matrix of weights}
 }
 \description{
 \emph{plasso()} implicitly estimates a Lasso model using the \code{\link[glmnet]{glmnet}} package
 and additionally estimates coefficient paths for a subsequent Post-Lasso model.
+}
+\examples{
+data(toeplitz)
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
+\donttest{p = plasso::plasso(X,y)}
+\donttest{plot(p, xvar="lambda")}
+
 }

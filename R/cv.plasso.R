@@ -19,8 +19,34 @@
 #' @importFrom stats coef predict var
 #'
 #' @return List object including base \code{\link[glmnet]{glmnet}} object and cross-validation results (incl. optimal Lambda values) for both Lasso and Post-Lasso model.
+#' \item{call}{the call that produced this}
+#' \item{lasso_full}{base \code{\link[glmnet]{glmnet}} object}
+#' \item{kf}{number of folds in k-fold CV}
+#' \item{cv_MSE_lasso}{cross-validated MSEs of Lasso model (for every kth iteration of k-fold cross-validation)}
+#' \item{cv_MSE_plasso}{cross-validated MSEs of Post-Lasso model (for every kth iteration of k-fold cross-validation)}
+#' \item{mean_MSE_lasso}{averaged cross-validated MSEs of Lasso model}
+#' \item{mean_MSE_plasso}{averaged cross-validated MSEs of Post-Lasso model}
+#' \item{ind_min_l}{index of MSE optimal lambda value for Lasso model}
+#' \item{ind_min_pl}{index of MSE optimal lambda value for Post-Lasso model}
+#' \item{lambda_min_l}{MSE optimal lambda value for Lasso model}
+#' \item{lambda_min_pl}{MSE optimal lambda value for Post-Lasso model}
+#' \item{names_l}{Names of active variables for MSE optimal Lasso model}
+#' \item{names_pl}{Names of active variables for MSE optimal Post-Lasso model}
+#' \item{coef_min_l}{Coefficients for MSE optimal Lasso model}
+#' \item{coef_min_pl}{Coefficients for MSE optimal Post-Lasso model}
+#' \item{x}{Input matrix of covariates}
+#' \item{y}{Matrix of outcomes}
+#' \item{w}{Matrix of weights}
 #'
 #' @export
+#' 
+#' @examples
+#' data(toeplitz)
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' \donttest{p.cv = plasso::cv.plasso(X,y)}
+#' \donttest{print(summary(p.cv, default=FALSE))}
+#' \donttest{plot(p.cv, legend_pos="left")}
 #'
 cv.plasso = function(x,y,
                   w=NULL,

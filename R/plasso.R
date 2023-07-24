@@ -15,9 +15,22 @@
 #' @importFrom graphics axis matplot text
 #' @importFrom methods as
 #'
-#' @return List including glmnet object and names of selected variables at cross-validated minima for Lasso and Post-Lasso.
+#' @return List including base \code{\link[glmnet]{glmnet}} (i.e. Lasso) object and Post-Lasso coefficients.
+#' \item{call}{the call that produced this}
+#' \item{lasso_full}{base \code{\link[glmnet]{glmnet}} object}
+#' \item{beta_plasso}{matrix of coefficients for Post-Lasso model stored in sparse column format}
+#' \item{x}{Input matrix of covariates}
+#' \item{y}{Matrix of outcomes}
+#' \item{w}{Matrix of weights}
 #'
 #' @export
+#' 
+#' @examples
+#' data(toeplitz)
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' \donttest{p = plasso::plasso(X,y)}
+#' \donttest{plot(p, xvar="lambda")}
 #'
 plasso = function(x,y,
                   w=NULL,
@@ -51,7 +64,7 @@ plasso = function(x,y,
   output = list("call"=this.call,
                 "lasso_full"=lasso_full,
                 "beta_plasso"=coef_plasso_full,
-                "x"=x[,-1],"y"=y)
+                "x"=x[,-1],"y"=y,"w"=w)
   
   class(output) = "plasso"
   return(output)
