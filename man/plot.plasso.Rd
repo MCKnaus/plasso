@@ -7,16 +7,16 @@
 \method{plot}{plasso}(x, ..., lasso = FALSE, xvar = c("norm", "lambda", "dev"), label = FALSE)
 }
 \arguments{
-\item{x}{\code{\link[plasso]{plasso}} object}
+\item{x}{\code{\link{plasso}} object}
 
 \item{...}{Pass generic \code{\link[base]{plot}} options}
 
 \item{lasso}{If set as True, coefficient paths for Lasso instead of Post-Lasso is plotted. Default is False.}
 
-\item{xvar}{What is on the X-axis
-"norm" plots against the L1-norm of the coefficients,
-"lambda" against the log-lambda sequence,
-and "dev" against the percent deviance explained.}
+\item{xvar}{X-axis variable:
+\code{norm} plots against the L1-norm of the coefficients,
+\code{lambda} against the log-lambda sequence,
+and \code{dev} against the percent deviance explained.}
 
 \item{label}{If TRUE, label the curves with variable sequence numbers}
 }

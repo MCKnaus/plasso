@@ -2,7 +2,7 @@
 % Please edit documentation in R/internal.plasso.R
 \name{find_Xse_ind}
 \alias{find_Xse_ind}
-\title{Helper function to find the position for pre-specified SE rules}
+\title{Helper function to find the position for prespecified SE rules}
 \usage{
 find_Xse_ind(CV, ind_min, oneSE, factor)
 }
@@ -19,6 +19,6 @@ find_Xse_ind(CV, ind_min, oneSE, factor)
 Index on the Lambda grid.
 }
 \description{
-\emph{find_Xse_ind()} is a helper function that finds the position for pre-specified SE rules.
+\code{\link{find_Xse_ind}} is a helper function that finds the position for prespecified SE rules.
 }
 \keyword{internal}

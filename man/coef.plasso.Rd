@@ -2,20 +2,20 @@
 % Please edit documentation in R/plasso.R
 \name{coef.plasso}
 \alias{coef.plasso}
-\title{Extract coefficients from a plasso object}
+\title{Extract coefficients from a \code{\link{plasso}} object}
 \usage{
 \method{coef}{plasso}(object, ..., s = NULL)
 }
 \arguments{
-\item{object}{\code{\link[plasso]{plasso}} object}
+\item{object}{\code{\link{plasso}} object}
 
 \item{...}{Pass generic \code{\link[stats]{coef}} options}
 
-\item{s}{If Null, coefficients are returned for all lambda values. If a value is provided, the closest lambda value of the plasso object is used.}
+\item{s}{If Null, coefficients are returned for all lambda values. If a value is provided, the closest lambda value of the \code{\link{plasso}} object is used.}
 }
 \value{
 List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
 }
 \description{
-Extract coefficients for both Lasso and Post-Lasso from a plasso object.
+Extract coefficients for both Lasso and Post-Lasso from a \code{\link{plasso}} object.
 }

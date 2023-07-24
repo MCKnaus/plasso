@@ -7,7 +7,7 @@
 \method{print}{cv.plasso}(x, ..., digits = max(3, getOption("digits") - 3))
 }
 \arguments{
-\item{x}{\code{\link[plasso]{cv.plasso}} object}
+\item{x}{\code{\link{cv.plasso}} object}
 
 \item{...}{Pass generic \code{\link[base]{print}} options}
 

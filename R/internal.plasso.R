@@ -1,14 +1,14 @@
 #' Fitted values for a subset of active variables
 #' 
 #' @description
-#' \emph{fitted_values_cv()} extracts a subset of active variables (nm_act) of the
-#' relevant variables from X'X and X'y to get out-of-sample predictions
-#' for a matrix containing only the active variables.
+#' \code{\link{fitted_values_cv}} extracts the active set from \eqn{X^TX}{"X'X"} and
+#' \eqn{X^Ty}{"X'y"} to get out-of-sample predictions
+#' for a matrix already containing only the active variables.
 #' The function is only relevant for cases where at least one variable is selected.
 #'
-#' @param XtX_all Crossproduct of all covariates
-#' @param Xty_all Crossproduct of covariates and outcome
-#' @param x_pred Covariates matrix of the PREDICTION sample
+#' @param XtX_all Cross product of all covariates
+#' @param Xty_all Cross product of covariates and outcome
+#' @param x_pred Covariates matrix of the prediction sample
 #' @param nm_act Names of active variables
 #'
 #' @return Fitted values in the prediction sample.
@@ -35,7 +35,7 @@ fitted_values_cv = function (XtX_all,Xty_all,x_pred,nm_act) {
 #' Normalization of sample weights for potential sample weights
 #' 
 #' @description
-#' \emph{norm_w_to_n()} normalizes weights either to N or to N in treated and controls separately.
+#' \code{\link{norm_w_to_n}} normalizes weights either to N or to N in treated and controls separately.
 #' 
 #' @param w Vector or n x 1 matrix of weights that should be normalized
 #' @param d Vector of treatment indicators
@@ -72,10 +72,10 @@ norm_w_to_n = function(w,d=NULL) {
 }
 
 
-#' Helper function to find the position for pre-specified SE rules
+#' Helper function to find the position for prespecified SE rules
 #' 
 #' @description
-#' \emph{find_Xse_ind()} is a helper function that finds the position for pre-specified SE rules.
+#' \code{\link{find_Xse_ind}} is a helper function that finds the position for prespecified SE rules.
 #'
 #' @param CV Vector of cross-validated criterion
 #' @param ind_min Index of cross-validated minimum
@@ -110,7 +110,7 @@ find_Xse_ind = function(CV,ind_min,oneSE,factor) {
 #' Adds an intercept to a matrix
 #' 
 #' @description
-#' \emph{add_intercept()} adds an intercept to a matrix.
+#' \code{\link{add_intercept}} adds an intercept to a matrix.
 #' 
 #' @param mat Any matrix (with column names).
 #'
@@ -138,7 +138,7 @@ add_intercept <- function(mat) {
 #' Sanitizes potential sample weights
 #' 
 #' @description
-#' \emph{handle_weights()} cleans potential sample weights or codes them as ones if they are not specified.
+#' \code{\link{handle_weights}} cleans potential sample weights or codes them as ones if they are not specified.
 #' 
 #' @param w Vector or n x 1 matrix of weights or null if no weights provided
 #' @param n Number of observations
@@ -165,7 +165,7 @@ handle_weights = function(w,n) {
 #' plasso fitting
 #' 
 #' @description
-#' \emph{fit_betas()} estimates OLS model only for active coefficients (from lasso)
+#' \code{\link{fit_betas}} estimates OLS model only for active coefficients (from lasso)
 #' 
 #' @param x Matrix of covariates (number of observations times number of covariates matrix)
 #' @param y Vector of outcomes

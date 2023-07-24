@@ -15,6 +15,6 @@ norm_w_to_n(w, d = NULL)
 Normalized weights.
 }
 \description{
-\emph{norm_w_to_n()} normalizes weights either to N or to N in treated and controls separately.
+\code{\link{norm_w_to_n}} normalizes weights either to N or to N in treated and controls separately.
 }
 \keyword{internal}

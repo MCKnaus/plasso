@@ -7,11 +7,11 @@
 \method{summary}{cv.plasso}(object, ..., default = TRUE)
 }
 \arguments{
-\item{object}{\code{\link[plasso]{cv.plasso}} object}
+\item{object}{\code{\link{cv.plasso}} object}
 
 \item{...}{Pass generic \code{\link[base]{summary}} summary options}
 
-\item{default}{TRUE for glmnet-like summary output, FALSE for more specific summary information}
+\item{default}{TRUE for \code{\link[glmnet]{glmnet}}-like summary output, FALSE for more specific summary information}
 }
 \value{
 For specific summary information: List object containing optimal lambda value and associated MSE for both cross-validated Lasso and Post-Lasso model.

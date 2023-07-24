@@ -7,11 +7,11 @@
 fitted_values_cv(XtX_all, Xty_all, x_pred, nm_act)
 }
 \arguments{
-\item{XtX_all}{Crossproduct of all covariates}
+\item{XtX_all}{Cross product of all covariates}
 
-\item{Xty_all}{Crossproduct of covariates and outcome}
+\item{Xty_all}{Cross product of covariates and outcome}
 
-\item{x_pred}{Covariates matrix of the PREDICTION sample}
+\item{x_pred}{Covariates matrix of the prediction sample}
 
 \item{nm_act}{Names of active variables}
 }
@@ -19,9 +19,9 @@ fitted_values_cv(XtX_all, Xty_all, x_pred, nm_act)
 Fitted values in the prediction sample.
 }
 \description{
-\emph{fitted_values_cv()} extracts a subset of active variables (nm_act) of the
-relevant variables from X'X and X'y to get out-of-sample predictions
-for a matrix containing only the active variables.
+\code{\link{fitted_values_cv}} extracts the active set from \eqn{X^TX}{"X'X"} and
+\eqn{X^Ty}{"X'y"} to get out-of-sample predictions
+for a matrix already containing only the active variables.
 The function is only relevant for cases where at least one variable is selected.
 }
 \keyword{internal}

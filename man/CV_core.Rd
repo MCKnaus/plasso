@@ -7,7 +7,7 @@
 CV_core(x, y, w, cvgroup, list, i, lambda, ...)
 }
 \arguments{
-\item{x}{Covariate matrix to be used in CV}
+\item{x}{Covariate matrix to be used in cross-validation}
 
 \item{y}{Vector of outcomes}
 
@@ -27,6 +27,6 @@ CV_core(x, y, w, cvgroup, list, i, lambda, ...)
 MSE_lasso / MSE_plasso: means squared errors for each lambda.
 }
 \description{
-\emph{CV_core()} ccontains the core parts of the CV for Lasso and Post-Lasso.
+\code{\link{CV_core}} contains the core parts of the cross-validation for Lasso and Post-Lasso.
 }
 \keyword{internal}

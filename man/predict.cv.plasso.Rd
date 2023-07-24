@@ -14,19 +14,19 @@
 )
 }
 \arguments{
-\item{object}{Fitted \code{\link[plasso]{cv.plasso}} model object}
+\item{object}{Fitted \code{\link{cv.plasso}} model object}
 
 \item{...}{Pass generic \code{\link[stats]{predict}} options}
 
-\item{newx}{Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".}
+\item{newx}{Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for \code{type="coefficients"}.}
 
-\item{type}{Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.}
+\item{type}{Type of prediction required. \code{"response"} returns fitted values, \code{"coefficients"} returns beta estimates.}
 
-\item{s}{Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.}
+\item{s}{Determines whether prediction is done for all values of lambda (\code{"all"}) or only for the optimal lambda (\code{"optimal"}) according to the standard error-rule.}
 
-\item{se_rule}{Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
-models, positive values go in the direction of larger models (e.g. se_rule=-1 creates the standard 1SE rule).
-This argument is not used for s="all".}
+\item{se_rule}{If equal to 0, predictions from cross-validated MSE minimum (default). Negative values go in the direction of smaller
+models, positive values go in the direction of larger models (e.g. \code{se_rule=-1} creates the standard 1SE rule).
+This argument is not used for \code{s="all"}.}
 }
 \value{
 Returns predictions of coefficients or fitted values for all lambda values or the optimal one.

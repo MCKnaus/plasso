@@ -1,12 +1,12 @@
-#' Cross-validated Lasso and Post-Lasso
+#' Cross-Validated Lasso and Post-Lasso
 #' 
 #' @description
-#' \emph{cv.plasso()} uses the \code{\link[glmnet]{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
+#' \code{\link{cv.plasso}} uses the \code{\link[glmnet]{glmnet}} package to estimate the coefficient paths and cross-validates least squares Lasso AND Post-Lasso.
 #'
 #' @param x Matrix of covariates (number of observations times number of covariates matrix)
 #' @param y Vector of outcomes
 #' @param w Vector of weights
-#' @param kf Number of folds in k-fold CV
+#' @param kf Number of folds in k-fold cross-validation
 #' @param parallel Set as TRUE for parallelized cross-validation. Default is FALSE.
 #' @param ... Pass \code{\link[glmnet]{glmnet}} options
 #' 
@@ -21,9 +21,9 @@
 #' @return List object including base \code{\link[glmnet]{glmnet}} object and cross-validation results (incl. optimal Lambda values) for both Lasso and Post-Lasso model.
 #' \item{call}{the call that produced this}
 #' \item{lasso_full}{base \code{\link[glmnet]{glmnet}} object}
-#' \item{kf}{number of folds in k-fold CV}
-#' \item{cv_MSE_lasso}{cross-validated MSEs of Lasso model (for every kth iteration of k-fold cross-validation)}
-#' \item{cv_MSE_plasso}{cross-validated MSEs of Post-Lasso model (for every kth iteration of k-fold cross-validation)}
+#' \item{kf}{number of folds in k-fold cross-validation}
+#' \item{cv_MSE_lasso}{cross-validated MSEs of Lasso model (for every iteration of k-fold cross-validation)}
+#' \item{cv_MSE_plasso}{cross-validated MSEs of Post-Lasso model (for every iteration of k-fold cross-validation)}
 #' \item{mean_MSE_lasso}{averaged cross-validated MSEs of Lasso model}
 #' \item{mean_MSE_plasso}{averaged cross-validated MSEs of Post-Lasso model}
 #' \item{ind_min_l}{index of MSE optimal lambda value for Lasso model}
@@ -54,7 +54,7 @@
 #' \donttest{plot(p.cv, legend_pos="left")}
 #' # get coefficients at MSE optimal lambda value for both Lasso and Post-Lasso model
 #' \donttest{coef(p.cv)}
-#' # get coefficients at MSE optimal lambda value according to 1-Standard-Error rule (i.e. favoring more parsimonious models)
+#' # get coefficients at MSE optimal lambda value according to 1-standard-error rule
 #' \donttest{coef(p.cv, se_rule=-1)}
 #' # predict fitted values along whole lambda sequence 
 #' \donttest{pred = predict(p.cv, s="all")}
@@ -163,7 +163,7 @@ cv.plasso = function(x,y,
 #' @description
 #' Printing main insights from cross-validated (Post-) Lasso model.
 #'
-#' @param x \code{\link[plasso]{cv.plasso}} object
+#' @param x \code{\link{cv.plasso}} object
 #' @param ... Pass generic \code{\link[base]{print}} options
 #' @param digits Integer, used for number formatting
 #'
@@ -193,9 +193,9 @@ print.cv.plasso = function(x,...,digits=max(3, getOption("digits")-3)) {
 #' @description
 #' Summary of cross-validated (Post-) Lasso model.
 #'
-#' @param object \code{\link[plasso]{cv.plasso}} object
+#' @param object \code{\link{cv.plasso}} object
 #' @param ... Pass generic \code{\link[base]{summary}} summary options
-#' @param default TRUE for glmnet-like summary output, FALSE for more specific summary information
+#' @param default TRUE for \code{\link[glmnet]{glmnet}}-like summary output, FALSE for more specific summary information
 #'
 #' @return For specific summary information: List object containing optimal lambda value and associated MSE for both cross-validated Lasso and Post-Lasso model.
 #' 
@@ -231,9 +231,9 @@ summary.cv.plasso = function(object,...,default=TRUE) {
 #' Print summary of (Post-) Lasso model
 #'
 #' @description
-#' Prints summary information of cv.plasso object
+#' Prints summary information of \code{\link{cv.plasso}} object
 #'
-#' @param x Summary of plasso object (either of class "summary.plasso' or "summaryDefault")
+#' @param x Summary of plasso object (either of class \code{\link{summary.cv.plasso}} or \code{\link[base]{summary}})
 #' @param ... Pass generic R \code{\link[base]{print}} options
 #' @param digits Integer, used for number formatting
 #' 
@@ -269,14 +269,14 @@ print.summary.cv.plasso = function(x,...,digits=max(3L, getOption("digits") - 3L
 #' @description
 #' Prediction for cross-validated (Post-) Lasso.
 #'
-#' @param object Fitted \code{\link[plasso]{cv.plasso}} model object
+#' @param object Fitted \code{\link{cv.plasso}} model object
 #' @param ... Pass generic \code{\link[stats]{predict}} options
-#' @param newx Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
-#' @param type Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.
-#' @param s Determines whether prediction is done for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the standard error-rule.
-#' @param se_rule Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
-#' models, positive values go in the direction of larger models (e.g. se_rule=-1 creates the standard 1SE rule).
-#' This argument is not used for s="all".
+#' @param newx Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for \code{type="coefficients"}.
+#' @param type Type of prediction required. \code{"response"} returns fitted values, \code{"coefficients"} returns beta estimates.
+#' @param s Determines whether prediction is done for all values of lambda (\code{"all"}) or only for the optimal lambda (\code{"optimal"}) according to the standard error-rule.
+#' @param se_rule If equal to 0, predictions from cross-validated MSE minimum (default). Negative values go in the direction of smaller
+#' models, positive values go in the direction of larger models (e.g. \code{se_rule=-1} creates the standard 1SE rule).
+#' This argument is not used for \code{s="all"}.
 #' 
 #' @return Returns predictions of coefficients or fitted values for all lambda values or the optimal one.
 #'
@@ -384,17 +384,17 @@ predict.cv.plasso = function(object,
 }
 
 
-#' Extract coefficients from a cv.plasso object
+#' Extract coefficients from a \code{\link{cv.plasso}} object
 #' 
 #' @description
-#' Extract coefficients for both Lasso and Post-Lasso from a cv.plasso object.
+#' Extract coefficients for both Lasso and Post-Lasso from a \code{\link{cv.plasso}} object.
 #' 
-#' @param object \code{\link[plasso]{cv.plasso}} object
+#' @param object \code{\link{cv.plasso}} object
 #' @param ... Pass generic \code{\link[stats]{coef}} options
 #' @param s Determines whether coefficients are extracted for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the specified standard error-rule.
-#' @param se_rule Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
-#' models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
-#' (e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".
+#' @param se_rule If equal to 0, predictions from cross-validated MSE minimum (default). Negative values go in the direction of smaller
+#' models, positive values go in the direction of larger models (e.g. \code{se_rule=-1} creates the standard 1SE rule).
+#' This argument is not used for \code{s="all"}.
 #' 
 #' @return List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
 #'
@@ -412,7 +412,7 @@ coef.cv.plasso = function(object,...,s=c("optimal","all"),se_rule=0){
 #' @description
 #' Plot of cross-validation curves.
 #' 
-#' @param x \code{\link[plasso]{cv.plasso}} object
+#' @param x \code{\link{cv.plasso}} object
 #' @param ... Pass generic \code{\link[base]{plot}} options
 #' @param legend_pos Legend position. Only considered for joint plot (lass=FALSE).
 #' @param legend_size Font size of legend
@@ -486,9 +486,9 @@ plot.cv.plasso = function(x,...,
 #' Core part for (Post-) Lasso cross-validation
 #' 
 #' @description
-#' \emph{CV_core()} ccontains the core parts of the CV for Lasso and Post-Lasso.
+#' \code{\link{CV_core}} contains the core parts of the cross-validation for Lasso and Post-Lasso.
 #' 
-#' @param x Covariate matrix to be used in CV
+#' @param x Covariate matrix to be used in cross-validation
 #' @param y Vector of outcomes
 #' @param w Vector of weight
 #' @param cvgroup Categorical with k groups to identify folds

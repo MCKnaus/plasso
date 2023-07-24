@@ -21,6 +21,6 @@ fit_betas(x, y, w, nm_act, coef_lasso)
 Beta estimates.
 }
 \description{
-\emph{fit_betas()} estimates OLS model only for active coefficients (from lasso)
+\code{\link{fit_betas}} estimates OLS model only for active coefficients (from lasso)
 }
 \keyword{internal}

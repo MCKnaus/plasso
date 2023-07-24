@@ -25,7 +25,7 @@ List including base \code{\link[glmnet]{glmnet}} (i.e. Lasso) object and Post-La
 \item{w}{Matrix of weights}
 }
 \description{
-\emph{plasso()} implicitly estimates a Lasso model using the \code{\link[glmnet]{glmnet}} package
+\code{\link{plasso}} implicitly estimates a Lasso model using the \code{\link[glmnet]{glmnet}} package
 and additionally estimates coefficient paths for a subsequent Post-Lasso model.
 }
 \examples{

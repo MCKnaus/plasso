@@ -15,6 +15,6 @@ handle_weights(w, n)
 Vector of weights.
 }
 \description{
-\emph{handle_weights()} cleans potential sample weights or codes them as ones if they are not specified.
+\code{\link{handle_weights}} cleans potential sample weights or codes them as ones if they are not specified.
 }
 \keyword{internal}

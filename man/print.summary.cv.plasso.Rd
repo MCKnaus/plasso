@@ -7,12 +7,12 @@
 \method{print}{summary.cv.plasso}(x, ..., digits = max(3L, getOption("digits") - 3L))
 }
 \arguments{
-\item{x}{Summary of plasso object (either of class "summary.plasso' or "summaryDefault")}
+\item{x}{Summary of plasso object (either of class \code{\link{summary.cv.plasso}} or \code{\link[base]{summary}})}
 
 \item{...}{Pass generic R \code{\link[base]{print}} options}
 
 \item{digits}{Integer, used for number formatting}
 }
 \description{
-Prints summary information of cv.plasso object
+Prints summary information of \code{\link{cv.plasso}} object
 }

@@ -7,12 +7,12 @@
 \method{summary}{plasso}(object, ...)
 }
 \arguments{
-\item{object}{\code{\link[plasso]{plasso}} object}
+\item{object}{\code{\link{plasso}} object}
 
 \item{...}{Pass generic \code{\link[base]{summary}} summary options}
 }
 \value{
-'summaryDefault' object
+Default \code{\link[base]{summary}} object
 }
 \description{
 Summary of (Post-) Lasso model.

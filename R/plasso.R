@@ -1,7 +1,7 @@
 #' Lasso and Post-Lasso
 #' 
 #' @description
-#' \emph{plasso()} implicitly estimates a Lasso model using the \code{\link[glmnet]{glmnet}} package
+#' \code{\link{plasso}} implicitly estimates a Lasso model using the \code{\link[glmnet]{glmnet}} package
 #' and additionally estimates coefficient paths for a subsequent Post-Lasso model.
 #'
 #' @param x Matrix of covariates (number of observations times number of covariates matrix)
@@ -87,11 +87,11 @@ plasso = function(x,y,
 #' @description
 #' Printing main insights from (Post-) Lasso model.
 #'
-#' @param x \code{\link[plasso]{plasso}} object
+#' @param x \code{\link{plasso}} object
 #' @param ... Pass generic \code{\link[base]{print}} options
 #' @param digits Integer, used for number formatting
 #'
-#' @return Prints glmnet like output.
+#' @return Prints \code{\link[glmnet]{glmnet}}-like output.
 #' 
 #' @method print plasso
 #'
@@ -115,10 +115,10 @@ print.plasso = function(x,...,digits=max(3, getOption("digits")-3)) {
 #' @description
 #' Summary of (Post-) Lasso model.
 #'
-#' @param object \code{\link[plasso]{plasso}} object
+#' @param object \code{\link{plasso}} object
 #' @param ... Pass generic \code{\link[base]{summary}} summary options
 #'
-#' @return 'summaryDefault' object
+#' @return Default \code{\link[base]{summary}} object
 #' 
 #' @method summary plasso
 #'
@@ -136,7 +136,7 @@ summary.plasso = function(object,...) {
 #' @description
 #' Prediction for (Post-) Lasso models.
 #'
-#' @param object Fitted \code{\link[plasso]{plasso}} model object
+#' @param object Fitted \code{\link{plasso}} model object
 #' @param ... Pass generic \code{\link[stats]{predict}} options
 #' @param newx Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
 #' @param type Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.
@@ -229,14 +229,14 @@ predict.plasso = function(object,
 }
 
 
-#' Extract coefficients from a plasso object
+#' Extract coefficients from a \code{\link{plasso}} object
 #' 
 #' @description
-#' Extract coefficients for both Lasso and Post-Lasso from a plasso object.
+#' Extract coefficients for both Lasso and Post-Lasso from a \code{\link{plasso}} object.
 #' 
-#' @param object \code{\link[plasso]{plasso}} object
+#' @param object \code{\link{plasso}} object
 #' @param ... Pass generic \code{\link[stats]{coef}} options
-#' @param s If Null, coefficients are returned for all lambda values. If a value is provided, the closest lambda value of the plasso object is used.
+#' @param s If Null, coefficients are returned for all lambda values. If a value is provided, the closest lambda value of the \code{\link{plasso}} object is used.
 #' 
 #' @return List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
 #'
@@ -254,13 +254,13 @@ coef.plasso = function(object,...,s=NULL){
 #' @description
 #' Plot coefficient paths of (Post-) Lasso model.
 #' 
-#' @param x \code{\link[plasso]{plasso}} object
+#' @param x \code{\link{plasso}} object
 #' @param ... Pass generic \code{\link[base]{plot}} options
 #' @param lasso If set as True, coefficient paths for Lasso instead of Post-Lasso is plotted. Default is False.
-#' @param xvar What is on the X-axis
-#' "norm" plots against the L1-norm of the coefficients,
-#' "lambda" against the log-lambda sequence,
-#' and "dev" against the percent deviance explained.
+#' @param xvar X-axis variable:
+#' \code{norm} plots against the L1-norm of the coefficients,
+#' \code{lambda} against the log-lambda sequence,
+#' and \code{dev} against the percent deviance explained.
 #' @param label If TRUE, label the curves with variable sequence numbers
 #'
 #' @method plot plasso

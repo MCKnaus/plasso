@@ -13,6 +13,6 @@ add_intercept(mat)
 Matrix with intercept.
 }
 \description{
-\emph{add_intercept()} adds an intercept to a matrix.
+\code{\link{add_intercept}} adds an intercept to a matrix.
 }
 \keyword{internal}

@@ -14,7 +14,7 @@
 )
 }
 \arguments{
-\item{x}{\code{\link[plasso]{cv.plasso}} object}
+\item{x}{\code{\link{cv.plasso}} object}
 
 \item{...}{Pass generic \code{\link[base]{plot}} options}
 

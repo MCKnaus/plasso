@@ -13,7 +13,7 @@
 )
 }
 \arguments{
-\item{object}{Fitted \code{\link[plasso]{plasso}} model object}
+\item{object}{Fitted \code{\link{plasso}} model object}
 
 \item{...}{Pass generic \code{\link[stats]{predict}} options}
 

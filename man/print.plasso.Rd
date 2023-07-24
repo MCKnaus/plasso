@@ -7,14 +7,14 @@
 \method{print}{plasso}(x, ..., digits = max(3, getOption("digits") - 3))
 }
 \arguments{
-\item{x}{\code{\link[plasso]{plasso}} object}
+\item{x}{\code{\link{plasso}} object}
 
 \item{...}{Pass generic \code{\link[base]{print}} options}
 
 \item{digits}{Integer, used for number formatting}
 }
 \value{
-Prints glmnet like output.
+Prints \code{\link[glmnet]{glmnet}}-like output.
 }
 \description{
 Printing main insights from (Post-) Lasso model.

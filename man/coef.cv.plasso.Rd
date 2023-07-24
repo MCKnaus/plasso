@@ -2,24 +2,24 @@
 % Please edit documentation in R/cv.plasso.R
 \name{coef.cv.plasso}
 \alias{coef.cv.plasso}
-\title{Extract coefficients from a cv.plasso object}
+\title{Extract coefficients from a \code{\link{cv.plasso}} object}
 \usage{
 \method{coef}{cv.plasso}(object, ..., s = c("optimal", "all"), se_rule = 0)
 }
 \arguments{
-\item{object}{\code{\link[plasso]{cv.plasso}} object}
+\item{object}{\code{\link{cv.plasso}} object}
 
 \item{...}{Pass generic \code{\link[stats]{coef}} options}
 
 \item{s}{Determines whether coefficients are extracted for all values of lambda ("all") or only for the optimal lambda ("optimal") according to the specified standard error-rule.}
 
-\item{se_rule}{Only If equal to zero predictions from CV minimum (default). Negative values go in the direction of smaller
-models (e.g. se_rule=-1 creates the standard 1SE rule), positive values go in the direction of larger models
-(e.g. se_rule=1 creates the standard 1SE+ rule). This argument is not used for s="all".}
+\item{se_rule}{If equal to 0, predictions from cross-validated MSE minimum (default). Negative values go in the direction of smaller
+models, positive values go in the direction of larger models (e.g. \code{se_rule=-1} creates the standard 1SE rule).
+This argument is not used for \code{s="all"}.}
 }
 \value{
 List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
 }
 \description{
-Extract coefficients for both Lasso and Post-Lasso from a cv.plasso object.
+Extract coefficients for both Lasso and Post-Lasso from a \code{\link{cv.plasso}} object.
 }
