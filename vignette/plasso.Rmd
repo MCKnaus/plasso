@@ -1,5 +1,5 @@
 ---
-title: "An introduction to `plasso`"
+title: "An introduction to plasso"
 author:
   - Michael Knaus
   - Stefan Glaisner
@@ -8,12 +8,12 @@ bibliography: assets/plasso_refs.bib
 link-citations: true
 output:
   rmarkdown::html_vignette:
-    fig_width: 7
-    fig_height: 3
+    fig_width: 8
+    fig_height: 6
     toc: true
     code_folding: show
 vignette: >
-  %\VignetteIndexEntry{An Introduction to plasso}
+  %\VignetteIndexEntry{An introduction to plasso}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -61,15 +61,25 @@ The package generally provides two functions `plasso` and `cv.plasso` which are 
 
 The term `plasso` refers to a Post-Lasso model which estimates a least squares algorithm only for the active (i.e. non-zero) coefficients of a previously estimated Lasso models. This follows the idea that we want to do selection but without shrinkage.
 
-We will deal with some simulated data here.
+The package comes with some simulated data representing the following DGP:
+
+The covariates matrix $X$ consists of 25 variables whose effect size one the target $Y$ is defined by the vector $\boldsymbol{\pi} = [1, 0.9, 0.8, ..., 0.1, 0, ..., 0]'$ where the first 10 effects decrease from 1 to 0.1 by 0.1 whereas the remaining ones are zero. The variables in $X$ follow a normal distribution with mean zero while the covariance matrix follows a Toeplitz matrix, which is characterized by having constant diagonals:
+$$
+\boldsymbol{\Sigma} = \begin{bmatrix} 1 & 0.7 & 0.7^2 & ... & 0.7^{24} \\ 0.7 & 1 & 0.7 & ... & 0.7^{23} \\ 0.7^2 & 0.7 & 1 & ... & 0.7^{22} \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0.7^{24} & 0.7^{23} & 0.7^{22} & ... & 1 \end{bmatrix}
+$$
+
+The target $\boldsymbol{y}$ is then a linear transformation of $\boldsymbol{X}$ plus a vector of standard normal random variables. Each element of $\boldsymbol{y}$ is given by:
+$$
+y_i = \boldsymbol{X}_i \boldsymbol{\pi} + \varepsilon_i
+$$
+where $\varepsilon_i \sim \mathcal{N}(0,4)$.
 
 ```{r data}
 
-n = 1000
-p = 20
-x = matrix(runif(n*p,-pi,pi),ncol=p)
-y = runif(n)
-w = runif(n)
+data(toeplitz)
+
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
 
 ```
 
@@ -79,8 +89,8 @@ w = runif(n)
 
 ```{r fitplasso, out.lines=10}
 
-fit_p = plasso::plasso(x,y,w)
-fit_p
+p = plasso::plasso(X,y)
+p
 
 ```
 
@@ -88,8 +98,20 @@ You can plot the coefficient paths for both the Post-Lasso model as well as the 
 
 ```{r plotplasso, error=FALSE, warning=FALSE, message=FALSE}
 
-plot(fit_p)
-plot(fit_p, lasso=TRUE)
+plot(p, lasso=FALSE, xvar="lambda")
+
+plot(p, lasso=TRUE, xvar="lambda")
+
+```
+
+We can also have a look at which coefficients are active for a chosen lambda value. Here, the difference between Post-Lasso and Lasso becomes clearly visible. For the Lasso model, there is not only feature selection but shrinkage which results in the active coefficients being smaller than for the Post-Lasso model:
+
+```{r coefplasso, error=FALSE, warning=FALSE, message=FALSE}
+
+coef_p = coef(p, s=0.01)
+
+as.vector(coef_p$plasso)
+as.vector(coef_p$lasso)
 
 ```
 
@@ -102,8 +124,8 @@ When applying the `summary` method and setting the `default` parameter as FALSE,
 
 ```{r fitcvplasso}
 
-fit_p_cv = plasso::cv.plasso(x,y,w,kf=5,parallel=FALSE)
-summary(fit_p_cv, default=FALSE)
+p.cv = plasso::cv.plasso(X,y,kf=5,parallel=FALSE)
+summary(p.cv, default=FALSE)
 
 ```
 
@@ -111,7 +133,7 @@ Plot the cross-validated MSE by Lambda value for both models.
 
 ```{r plotcvplasso, fig.width=7, fig.height=3}
 
-plot(fit_p_cv, legend_pos="bottomleft", legend_size=0.5)
+plot(p.cv, legend_pos="left", legend_size=0.5)
 
 ```
 
@@ -119,9 +141,9 @@ Plot the cross-validated MSE by Lambda value for both models.
 
 ```{r plotcvglmnet, fig.width=7, fig.height=3}
 
-fit_glm_cv = glmnet::cv.glmnet(x,y)
+glm.cv = glmnet::cv.glmnet(X,y)
 
-plot(fit_glm_cv)
+plot(glm.cv)
 
 ```
 
@@ -129,15 +151,16 @@ We can use the following code to get the value of the optimal `lambda` (for the 
 
 ```{r index_min_plasso}
 
-fit_p_cv$lambda_min_pl
+p.cv$lambda_min_pl
 
 ```
 
 ```{r coef_min_plasso, out.lines=10}
 
-coef(fit_p_cv, S="optimal")
+coef_pcv = coef(p.cv, S="optimal")
+as.vector(coef_pcv$plasso)
 
 ```
-<br>
+
 <br>
 <br>
