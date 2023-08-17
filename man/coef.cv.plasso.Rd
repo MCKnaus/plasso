@@ -18,8 +18,27 @@ models, positive values go in the direction of larger models (e.g. \code{se_rule
 This argument is not used for \code{s="all"}.}
 }
 \value{
-List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
+List object containing coefficients for both the Lasso and Post-Lasso
+models respectively.
+\item{lasso}{Sparse dgCMatrix with Lasso coefficients}
+\item{plasso}{Sparse dgCMatrix with Post-Lasso coefficients}
 }
 \description{
 Extract coefficients for both Lasso and Post-Lasso from a \code{\link{cv.plasso}} object.
+}
+\examples{
+
+# load toeplitz data
+data(toeplitz)
+# extract target and features from data
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
+# fit cv.plasso to the data
+\donttest{p.cv = plasso::cv.plasso(X,y)}
+# get estimated coefficients along whole lambda sequence
+\donttest{coefs = coef(p.cv, s="all")}
+\donttest{head(coefs$plasso)}
+# get estimated coefficients for optimal lambda value according to 1-standard-error rule
+\donttest{coef(p.cv, s="optimal", se_rule=-1)}
+
 }

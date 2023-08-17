@@ -51,7 +51,7 @@
 #' # get basic summary statistics
 #' \donttest{print(summary(p.cv, default=FALSE))}
 #' # plot cross-validated MSE curves and number of active coefficients
-#' \donttest{plot(p.cv, legend_pos="left")}
+#' \donttest{plot(p.cv, legend_pos="bottomleft")}
 #' # get coefficients at MSE optimal lambda value for both Lasso and Post-Lasso model
 #' \donttest{coef(p.cv)}
 #' # get coefficients at MSE optimal lambda value according to 1-standard-error rule
@@ -197,13 +197,28 @@ print.cv.plasso = function(x,...,digits=max(3, getOption("digits")-3)) {
 #' @param ... Pass generic \code{\link[base]{summary}} summary options
 #' @param default TRUE for \code{\link[glmnet]{glmnet}}-like summary output, FALSE for more specific summary information
 #'
-#' @return For specific summary information: List object containing optimal lambda value and associated MSE for both cross-validated Lasso and Post-Lasso model.
+#' @return For specific summary information: List object containing optimal
+#' lambda value and associated MSE for both cross-validated Lasso and
+#' Post-Lasso model.
 #' 
 #' @method summary cv.plasso
 #'
 #' @export
 #'
-summary.cv.plasso = function(object,...,default=TRUE) {
+#' @examples
+#' # load toeplitz data
+#' data(toeplitz)
+#' # extract target and features from data
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' # fit cv.plasso to the data
+#' \donttest{p.cv = plasso::cv.plasso(X,y)}
+#' # get informative summary statistics
+#' \donttest{print(summary(p.cv, default=FALSE))}
+#' # set default=TRUE for standard summary statistics
+#' \donttest{print(summary(p.cv, default=TRUE))}
+#' 
+summary.cv.plasso = function(object,...,default=FALSE) {
   
   plasso = object
   
@@ -258,6 +273,7 @@ print.summary.cv.plasso = function(x,...,digits=max(3L, getOption("digits") - 3L
     cat("\nPost-Lasso:\n Minimum CV MSE Post-Lasso: ",toString(signif(min(x$mean_MSE_plasso,na.rm=TRUE),digits)))
     cat("\n Lambda at minimum: ",toString(signif(x$lasso_full$lambda[x$ind_min_pl],digits)))
     cat("\n Active variables at minimum: ",names(coef(x$lasso_full)[,x$ind_min_pl])[which(coef(x$lasso_full)[,x$ind_min_pl] != 0)])
+    cat("\n")
     
   }
   
@@ -278,11 +294,39 @@ print.summary.cv.plasso = function(x,...,digits=max(3L, getOption("digits") - 3L
 #' models, positive values go in the direction of larger models (e.g. \code{se_rule=-1} creates the standard 1SE rule).
 #' This argument is not used for \code{s="all"}.
 #' 
-#' @return Returns predictions of coefficients or fitted values for all lambda values or the optimal one.
+#' @return List object containing either fitted values or coefficients for both
+#' the Lasso and Post-Lasso models respectively.
+#' \item{lasso}{Matrix with Lasso predictions or coefficients}
+#' \item{plasso}{Matrix with Post-Lasso predictions or coefficients}
 #'
 #' @method predict cv.plasso
 #'
 #' @export
+#' 
+#' @examples
+#' 
+#' # load toeplitz data
+#' data(toeplitz)
+#' # extract target and features from data
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' # fit cv.plasso to the data
+#' \donttest{p.cv = plasso::cv.plasso(X,y)}
+#' # predict fitted values along whole lambda sequence 
+#' \donttest{pred = predict(p.cv, s="all")}
+#' \donttest{head(pred$plasso)}
+#' # predict fitted values for optimal lambda value (according to cross-validation) 
+#' \donttest{pred_optimal = predict(p.cv, s="optimal")}
+#' \donttest{head(pred_optimal$plasso)}
+#' # predict fitted values for new feature set X
+#' \donttest{X_new = head(X, 10)}
+#' \donttest{pred_new = predict(p.cv, newx=X_new, s="optimal")}
+#' \donttest{pred_new$plasso}
+#' # get estimated coefficients along whole lambda sequence
+#' \donttest{coefs = predict(p.cv, type="coefficients", s="all")}
+#' \donttest{head(coefs$plasso)}
+#' # get estimated coefficients for optimal lambda value according to 1-standard-error rule
+#' \donttest{predict(p.cv, type="coefficients", s="optimal", se_rule=-1)}
 #'
 predict.cv.plasso = function(object,
                              ...,
@@ -396,12 +440,30 @@ predict.cv.plasso = function(object,
 #' models, positive values go in the direction of larger models (e.g. \code{se_rule=-1} creates the standard 1SE rule).
 #' This argument is not used for \code{s="all"}.
 #' 
-#' @return List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
+#' @return List object containing coefficients for both the Lasso and Post-Lasso
+#' models respectively.
+#' \item{lasso}{Sparse dgCMatrix with Lasso coefficients}
+#' \item{plasso}{Sparse dgCMatrix with Post-Lasso coefficients}
 #'
 #' @method coef cv.plasso
 #'
 #' @export 
 #' 
+#' @examples
+#' 
+#' # load toeplitz data
+#' data(toeplitz)
+#' # extract target and features from data
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' # fit cv.plasso to the data
+#' \donttest{p.cv = plasso::cv.plasso(X,y)}
+#' # get estimated coefficients along whole lambda sequence
+#' \donttest{coefs = coef(p.cv, s="all")}
+#' \donttest{head(coefs$plasso)}
+#' # get estimated coefficients for optimal lambda value according to 1-standard-error rule
+#' \donttest{coef(p.cv, s="optimal", se_rule=-1)}
+#'
 coef.cv.plasso = function(object,...,s=c("optimal","all"),se_rule=0){
   return(predict(object,...,s=s,se_rule=se_rule,type="coefficients"))
 }
@@ -421,6 +483,17 @@ coef.cv.plasso = function(object,...,s=c("optimal","all"),se_rule=0){
 #' @method plot cv.plasso
 #'
 #' @export
+#' 
+#' @examples
+#' # load toeplitz data
+#' data(toeplitz)
+#' # extract target and features from data
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' # fit cv.plasso to the data
+#' \donttest{p.cv = plasso::cv.plasso(X,y)}
+#' # plot cross-validated MSE curves and number of active coefficients
+#' \donttest{plot(p.cv, legend_pos="bottomleft")}
 #'
 plot.cv.plasso = function(x,...,
                           legend_pos=c("bottomright","bottom","bottomleft","left","topleft","top","topright","right","center"),
@@ -451,7 +524,8 @@ plot.cv.plasso = function(x,...,
     
     # Plot mean lines
     ylab = "Mean-squared Error"
-    graphics::plot(xrange,yrange,type="n",xlab="Log Lambda",ylab=ylab)
+    xlab = expression(Log(lambda))
+    graphics::plot(xrange,yrange,type="n",xlab=xlab,ylab=ylab)
     graphics::lines(log(plasso$lasso_full$lambda),plasso$mean_MSE_lasso,lwd=1.5,col="blue")
     graphics::lines(log(plasso$lasso_full$lambda),plasso$mean_MSE_plasso,lwd=1.5,col="red")
     

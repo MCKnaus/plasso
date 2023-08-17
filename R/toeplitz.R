@@ -9,7 +9,9 @@
 #'
 #' @docType data
 #' 
-#' @keywords data
+#' @usage data(toeplitz)
+#'
+#' @keywords datasets
 #' 
 #' @export
 #' 

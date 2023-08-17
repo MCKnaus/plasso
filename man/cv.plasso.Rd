@@ -54,7 +54,7 @@ X = toeplitz[,-1]
 # get basic summary statistics
 \donttest{print(summary(p.cv, default=FALSE))}
 # plot cross-validated MSE curves and number of active coefficients
-\donttest{plot(p.cv, legend_pos="left")}
+\donttest{plot(p.cv, legend_pos="bottomleft")}
 # get coefficients at MSE optimal lambda value for both Lasso and Post-Lasso model
 \donttest{coef(p.cv)}
 # get coefficients at MSE optimal lambda value according to 1-standard-error rule

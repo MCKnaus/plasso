@@ -4,7 +4,7 @@
 \alias{summary.cv.plasso}
 \title{Summary of cross-validated (Post-) Lasso model}
 \usage{
-\method{summary}{cv.plasso}(object, ..., default = TRUE)
+\method{summary}{cv.plasso}(object, ..., default = FALSE)
 }
 \arguments{
 \item{object}{\code{\link{cv.plasso}} object}
@@ -14,8 +14,24 @@
 \item{default}{TRUE for \code{\link[glmnet]{glmnet}}-like summary output, FALSE for more specific summary information}
 }
 \value{
-For specific summary information: List object containing optimal lambda value and associated MSE for both cross-validated Lasso and Post-Lasso model.
+For specific summary information: List object containing optimal
+lambda value and associated MSE for both cross-validated Lasso and
+Post-Lasso model.
 }
 \description{
 Summary of cross-validated (Post-) Lasso model.
+}
+\examples{
+# load toeplitz data
+data(toeplitz)
+# extract target and features from data
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
+# fit cv.plasso to the data
+\donttest{p.cv = plasso::cv.plasso(X,y)}
+# get informative summary statistics
+\donttest{print(summary(p.cv, default=FALSE))}
+# set default=TRUE for standard summary statistics
+\donttest{print(summary(p.cv, default=TRUE))}
+
 }

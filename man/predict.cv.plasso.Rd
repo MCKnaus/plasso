@@ -29,8 +29,37 @@ models, positive values go in the direction of larger models (e.g. \code{se_rule
 This argument is not used for \code{s="all"}.}
 }
 \value{
-Returns predictions of coefficients or fitted values for all lambda values or the optimal one.
+List object containing either fitted values or coefficients for both
+the Lasso and Post-Lasso models respectively.
+\item{lasso}{Matrix with Lasso predictions or coefficients}
+\item{plasso}{Matrix with Post-Lasso predictions or coefficients}
 }
 \description{
 Prediction for cross-validated (Post-) Lasso.
+}
+\examples{
+
+# load toeplitz data
+data(toeplitz)
+# extract target and features from data
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
+# fit cv.plasso to the data
+\donttest{p.cv = plasso::cv.plasso(X,y)}
+# predict fitted values along whole lambda sequence 
+\donttest{pred = predict(p.cv, s="all")}
+\donttest{head(pred$plasso)}
+# predict fitted values for optimal lambda value (according to cross-validation) 
+\donttest{pred_optimal = predict(p.cv, s="optimal")}
+\donttest{head(pred_optimal$plasso)}
+# predict fitted values for new feature set X
+\donttest{X_new = head(X, 10)}
+\donttest{pred_new = predict(p.cv, newx=X_new, s="optimal")}
+\donttest{pred_new$plasso}
+# get estimated coefficients along whole lambda sequence
+\donttest{coefs = predict(p.cv, type="coefficients", s="all")}
+\donttest{head(coefs$plasso)}
+# get estimated coefficients for optimal lambda value according to 1-standard-error rule
+\donttest{predict(p.cv, type="coefficients", s="optimal", se_rule=-1)}
+
 }

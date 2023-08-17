@@ -38,7 +38,7 @@
 #' # plot coefficient paths for Lasso model
 #' \donttest{plot(p, lasso=TRUE, xvar="lambda")}
 #' # get coefficients for specific lambda approximation
-#' \donttest{coef(p, s=0.0001)}
+#' \donttest{coef(p, s=0.05)}
 #' # predict fitted values along whole lambda sequence 
 #' \donttest{pred = predict(p)}
 #' \donttest{head(pred$plasso)}
@@ -140,13 +140,32 @@ summary.plasso = function(object,...) {
 #' @param ... Pass generic \code{\link[stats]{predict}} options
 #' @param newx Matrix of new values for x at which predictions are to be made. If no value is supplied, x from fitting procedure is used. This argument is not used for type="coefficients".
 #' @param type Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.
-#' @param s If Null, prediction is done for all lambda values. If a value is provided, the closest lambda value of the plasso object is used.
+#' @param s If Null, prediction is done for all lambda values. If a value is provided, the closest lambda value of the \code{\link{plasso}} object is used.
 #' 
-#' @return Returns predictions of coefficients or fitted values for all lambda values or a particular one.
+#' @return List object containing either fitted values or coefficients for both
+#' the Lasso and Post-Lasso models associated with all values along the lambda
+#' input sequence or for one specifically given lambda value.
+#' \item{lasso}{Matrix with Lasso predictions or coefficients}
+#' \item{plasso}{Matrix with Post-Lasso predictions or coefficients}
 #'
 #' @method predict plasso
 #'
 #' @export
+#' 
+#' @examples
+#' 
+#' # load toeplitz data
+#' data(toeplitz)
+#' # extract target and features from data
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' # fit plasso to the data
+#' \donttest{p = plasso::plasso(X,y)}
+#' # predict fitted values along whole lambda sequence 
+#' \donttest{pred = predict(p)}
+#' \donttest{head(pred$plasso)}
+#' # get estimated coefficients for specific lambda approximation
+#' \donttest{predict(p, type="coefficients", s=0.05)}
 #'
 predict.plasso = function(object,
                           ...,
@@ -238,12 +257,31 @@ predict.plasso = function(object,
 #' @param ... Pass generic \code{\link[stats]{coef}} options
 #' @param s If Null, coefficients are returned for all lambda values. If a value is provided, the closest lambda value of the \code{\link{plasso}} object is used.
 #' 
-#' @return List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
+#' @return List object containing coefficients that are associated with either
+#' all values along the lambda input sequence or for one specifically given
+#' lambda value for both the Lasso and Post-Lasso models respectively.
+#' \item{lasso}{Sparse dgCMatrix with Lasso coefficients}
+#' \item{plasso}{Sparse dgCMatrix with Post-Lasso coefficients}
 #'
 #' @method coef plasso
 #'
 #' @export 
 #' 
+#' @examples
+#' 
+#' # load toeplitz data
+#' data(toeplitz)
+#' # extract target and features from data
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' # fit plasso to the data
+#' \donttest{p = plasso::plasso(X,y)}
+#' # get estimated coefficients along whole lambda sequence 
+#' \donttest{coefs = coef(p)}
+#' \donttest{head(coefs$plasso)}
+#' # get estimated coefficients for specific lambda approximation
+#' \donttest{coef(p, s=0.05)}
+#'
 coef.plasso = function(object,...,s=NULL){
   return(predict(object,...,s=s,type="coefficients"))
 }
@@ -266,6 +304,19 @@ coef.plasso = function(object,...,s=NULL){
 #' @method plot plasso
 #'
 #' @export
+#' 
+#' @examples
+#' # load toeplitz data
+#' data(toeplitz)
+#' # extract target and features from data
+#' y = as.matrix(toeplitz[,1])
+#' X = toeplitz[,-1]
+#' # fit plasso to the data
+#' \donttest{p = plasso::plasso(X,y)}
+#' # plot coefficient paths for Post-Lasso model
+#' \donttest{plot(p, lasso=FALSE, xvar="lambda")}
+#' # plot coefficient paths for Lasso model
+#' \donttest{plot(p, lasso=TRUE, xvar="lambda")}
 #'
 plot.plasso = function(x,..., lasso=FALSE,xvar=c("norm","lambda","dev"),label=FALSE) {
   

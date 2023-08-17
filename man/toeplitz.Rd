@@ -8,7 +8,7 @@
 An object of class \code{standardGeneric} of length 1.
 }
 \usage{
-toeplitz
+data(toeplitz)
 }
 \description{
 Some simulated data with a causal relationship between features X and target
@@ -27,4 +27,4 @@ X = toeplitz[,-1]
 \donttest{p.cv = plasso::cv.plasso(X,y)}
 
 }
-\keyword{data}
+\keyword{datasets}

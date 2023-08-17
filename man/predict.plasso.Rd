@@ -21,11 +21,31 @@
 
 \item{type}{Type of prediction required. "response" returns fitted values, "coefficients" returns beta estimates.}
 
-\item{s}{If Null, prediction is done for all lambda values. If a value is provided, the closest lambda value of the plasso object is used.}
+\item{s}{If Null, prediction is done for all lambda values. If a value is provided, the closest lambda value of the \code{\link{plasso}} object is used.}
 }
 \value{
-Returns predictions of coefficients or fitted values for all lambda values or a particular one.
+List object containing either fitted values or coefficients for both
+the Lasso and Post-Lasso models associated with all values along the lambda
+input sequence or for one specifically given lambda value.
+\item{lasso}{Matrix with Lasso predictions or coefficients}
+\item{plasso}{Matrix with Post-Lasso predictions or coefficients}
 }
 \description{
 Prediction for (Post-) Lasso models.
+}
+\examples{
+
+# load toeplitz data
+data(toeplitz)
+# extract target and features from data
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
+# fit plasso to the data
+\donttest{p = plasso::plasso(X,y)}
+# predict fitted values along whole lambda sequence 
+\donttest{pred = predict(p)}
+\donttest{head(pred$plasso)}
+# get estimated coefficients for specific lambda approximation
+\donttest{predict(p, type="coefficients", s=0.05)}
+
 }

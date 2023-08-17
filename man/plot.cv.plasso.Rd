@@ -27,3 +27,15 @@
 \description{
 Plot of cross-validation curves.
 }
+\examples{
+# load toeplitz data
+data(toeplitz)
+# extract target and features from data
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
+# fit cv.plasso to the data
+\donttest{p.cv = plasso::cv.plasso(X,y)}
+# plot cross-validated MSE curves and number of active coefficients
+\donttest{plot(p.cv, legend_pos="bottomleft")}
+
+}

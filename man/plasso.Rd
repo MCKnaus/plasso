@@ -41,7 +41,7 @@ X = toeplitz[,-1]
 # plot coefficient paths for Lasso model
 \donttest{plot(p, lasso=TRUE, xvar="lambda")}
 # get coefficients for specific lambda approximation
-\donttest{coef(p, s=0.0001)}
+\donttest{coef(p, s=0.05)}
 # predict fitted values along whole lambda sequence 
 \donttest{pred = predict(p)}
 \donttest{head(pred$plasso)}

@@ -23,3 +23,17 @@ and \code{dev} against the percent deviance explained.}
 \description{
 Plot coefficient paths of (Post-) Lasso model.
 }
+\examples{
+# load toeplitz data
+data(toeplitz)
+# extract target and features from data
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
+# fit plasso to the data
+\donttest{p = plasso::plasso(X,y)}
+# plot coefficient paths for Post-Lasso model
+\donttest{plot(p, lasso=FALSE, xvar="lambda")}
+# plot coefficient paths for Lasso model
+\donttest{plot(p, lasso=TRUE, xvar="lambda")}
+
+}

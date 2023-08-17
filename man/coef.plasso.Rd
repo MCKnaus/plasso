@@ -14,8 +14,28 @@
 \item{s}{If Null, coefficients are returned for all lambda values. If a value is provided, the closest lambda value of the \code{\link{plasso}} object is used.}
 }
 \value{
-List containing matrices or vector of coefficients for both Lasso and Post-Lasso.
+List object containing coefficients that are associated with either
+all values along the lambda input sequence or for one specifically given
+lambda value for both the Lasso and Post-Lasso models respectively.
+\item{lasso}{Sparse dgCMatrix with Lasso coefficients}
+\item{plasso}{Sparse dgCMatrix with Post-Lasso coefficients}
 }
 \description{
 Extract coefficients for both Lasso and Post-Lasso from a \code{\link{plasso}} object.
+}
+\examples{
+
+# load toeplitz data
+data(toeplitz)
+# extract target and features from data
+y = as.matrix(toeplitz[,1])
+X = toeplitz[,-1]
+# fit plasso to the data
+\donttest{p = plasso::plasso(X,y)}
+# get estimated coefficients along whole lambda sequence 
+\donttest{coefs = coef(p)}
+\donttest{head(coefs$plasso)}
+# get estimated coefficients for specific lambda approximation
+\donttest{coef(p, s=0.05)}
+
 }
