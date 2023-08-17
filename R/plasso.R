@@ -51,7 +51,7 @@ plasso = function(x,y,
   # Handle potentially provided sample weights, otherwise create weight vector of ones
   w = handle_weights(w,nrow(x))
   # Create variable names if not provided
-  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
+  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq_len(ncol(x)))
   
   # Lasso with full estimation sample
   lasso_full = glmnet(x,y,weights=as.vector(w),family="gaussian",...)
@@ -64,7 +64,7 @@ plasso = function(x,y,
                             nrow=dim(coef_lasso_full)[1],ncol=dim(coef_lasso_full)[2],
                             dimnames=list(rownames(coef_lasso_full),colnames(coef_lasso_full)))
   
-  for (i in 1:l) {
+  for (i in seq_len(l)) {
     
     nm_act = names(coef_lasso_full[,i])[which(coef_lasso_full[,i] != 0)]
     coef_plasso_full[,i] = fit_betas(x,y,w,nm_act,coef_lasso_full[,i])
@@ -178,7 +178,7 @@ predict.plasso = function(object,
   type = match.arg(type)
   
   if (is.null(newx)) x = plasso$x else x = newx
-  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
+  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq_len(ncol(x)))
   x = add_intercept(x)
   y = plasso$y
   lambda_names = names(plasso$lasso_full$a0)
@@ -205,7 +205,7 @@ predict.plasso = function(object,
       fit_lasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(NULL,lambda_names))
       fit_plasso = matrix(NA,nrow=nrow(x),ncol=l,dimnames=list(NULL,lambda_names))
       
-      for (i in 1:l) {
+      for (i in seq_len(l)) {
         
         fit_lasso[,i] = x %*% coef_lasso[,i]
         fit_plasso[,i] = x %*% coef_plasso[,i]

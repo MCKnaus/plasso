@@ -25,17 +25,17 @@ test_that("predict.plasso for all lambda values", {
   })
   
   # get predictions from stats::lm
-  predict_lm_models = sapply(active_list, function(r) {
+  predict_lm_models = vapply(active_list, function(r) {
     formula_str = paste("y ~", gsub(r"(Intercept)",1,paste(r, collapse = " + ")))
     formula = as.formula(formula_str)
     model = stats::lm(formula, data=df)
     pred_lm = predict(model, newdata=df_new)
     return(pred_lm)
-  })
+  }, FUN.VALUE = numeric(n_pred))
   dimnames(predict_lm_models) = dimnames(pred_p[["plasso"]])
   
   # get coefficients from stats::lm
-  coef_lm_models = sapply(active_list, function(r) {
+  coef_lm_models = vapply(active_list, function(r) {
     placeholder = rep(0,n_var+1)
     names(placeholder) = rownames(coef_p[["plasso"]])
     formula_str = paste("y ~", gsub(r"(Intercept)",1,paste(r, collapse = " + ")))
@@ -44,7 +44,7 @@ test_that("predict.plasso for all lambda values", {
     coef_lm_init = coef(model)
     placeholder[r] = coef_lm_init
     return(placeholder)
-  })
+  }, FUN.VALUE = numeric(n_var + 1))
   dimnames(coef_lm_models) = dimnames(coef_p[["plasso"]])
   
   # check fitted values for plasso
@@ -154,17 +154,17 @@ test_that("predict.cv.plasso for s=all", {
   })
   
   # get predictions from stats::lm
-  predict_lm_models = sapply(active_list, function(r) {
+  predict_lm_models = vapply(active_list, function(r) {
     formula_str = paste("y ~", gsub(r"(Intercept)",1,paste(r, collapse = " + ")))
     formula = as.formula(formula_str)
     model = stats::lm(formula, data=df)
     pred_lm = predict(model, newdata=df_new)
     return(pred_lm)
-  })
+  }, FUN.VALUE = numeric(n_pred))
   dimnames(predict_lm_models) = dimnames(pred_p[["plasso"]])
   
   # get coefficients from stats::lm
-  coef_lm_models = sapply(active_list, function(r) {
+  coef_lm_models = vapply(active_list, function(r) {
     placeholder = rep(0,n_var+1)
     names(placeholder) = rownames(coef_p[["plasso"]])
     formula_str = paste("y ~", gsub(r"(Intercept)",1,paste(r, collapse = " + ")))
@@ -173,7 +173,7 @@ test_that("predict.cv.plasso for s=all", {
     coef_lm_init = coef(model)
     placeholder[r] = coef_lm_init
     return(placeholder)
-  })
+  }, FUN.VALUE = numeric(n_var + 1))
   dimnames(coef_lm_models) = dimnames(coef_p[["plasso"]])
   
   # check fitted values for plasso

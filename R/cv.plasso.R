@@ -70,7 +70,7 @@ cv.plasso = function(x,y,
   # Handle potentially provided sample weights, otherwise create weight vector of ones
   w = handle_weights(w,nrow(x))
   # Create variable names if not provided
-  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
+  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq_len(ncol(x)))
   
   # Lasso with full estimation sample
   lasso_full = glmnet(x,y,weights=as.vector(w),family="gaussian",...)
@@ -80,7 +80,7 @@ cv.plasso = function(x,y,
   # Get indicator for CV samples
   split = stats::runif(nrow(x))
   cvgroup = as.numeric(cut(split,stats::quantile(split,probs=seq(0,1,1/kf)),include.lowest=TRUE))  # Groups for k-fold CV
-  list = 1:kf                                         # Needed later in the loop to get the appropriate samples
+  list = seq_len(kf)                                   # Needed later in the loop to get the appropriate samples
   
   if (!parallel) {
     
@@ -89,7 +89,7 @@ cv.plasso = function(x,y,
     cv_MSE_plasso = matrix(nrow = kf,ncol = length(lambda))
     
     # Start loop for cross-validation of Lasso and Post-Lasso
-    for (i in 1:kf) {
+    for (i in list) {
       CV = CV_core(x,y,w,cvgroup,list,i,lambda,...)
       
       # Extract MSE of Lasso and Post-Lasso
@@ -104,7 +104,7 @@ cv.plasso = function(x,y,
     cl = parallel::makeCluster(n_cores, methods=FALSE)
     doParallel::registerDoParallel(cl)
     
-    para_res <- foreach::foreach(i = 1:kf, .combine="rbind", .inorder=FALSE) %dopar% {
+    para_res <- foreach::foreach(i = seq_len(kf), .combine="rbind", .inorder=FALSE) %dopar% {
                            
                            ## core CV program functionsxxx no. 9
                            CV = CV_core(x,y,w,cvgroup,list,i,lambda,...)
@@ -119,7 +119,7 @@ cv.plasso = function(x,y,
     parallel::stopCluster(cl)
     
     para_res <- as.matrix(do.call(cbind,para_res))
-    cv_MSE_lasso <- t(para_res[,1:kf])
+    cv_MSE_lasso <- t(para_res[,seq_len(kf)])
     cv_MSE_plasso <- t(para_res[,(kf+1):(2*kf)])
     
   }
@@ -342,7 +342,7 @@ predict.cv.plasso = function(object,
   
   x = plasso$x
   if ( is.null(newx) ) newx = x
-  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq(1:ncol(x)))
+  if ( is.null( colnames(x) ) ) colnames(x) = sprintf("var%s",seq_len(ncol(x)))
   colnames(newx) = colnames(x)
   x = add_intercept(x)
   newx = add_intercept(newx)
@@ -396,7 +396,7 @@ predict.cv.plasso = function(object,
     coef_lasso = as.matrix(coef(plasso$lasso_full))
     coef_plasso = matrix(NA,nrow=ncol(x),ncol=l,dimnames=list(colnames(x),colnames(coef_lasso)))
     
-    for (i in 1:l) {
+    for (i in seq_len(l)) {
   
       nm_act = names(coef_lasso[,i])[which(coef_lasso[,i] != 0)]
       coef_plasso[,i] = fit_betas(x,y,w,nm_act,coef_lasso[,i])
@@ -415,7 +415,7 @@ predict.cv.plasso = function(object,
       fit_lasso = matrix(NA,nrow=nrow(newx),ncol=l,dimnames=list(NULL,colnames(coef_lasso)))
       fit_plasso = matrix(NA,nrow=nrow(newx),ncol=l,dimnames=list(NULL,colnames(coef_lasso)))
       
-      for (i in 1:l) {
+      for (i in seq_len(l)) {
         
         fit_lasso[,i] = newx %*% coef_lasso[,i]
         fit_plasso[,i] = newx %*% coef_plasso[,i]
@@ -642,7 +642,7 @@ CV_core = function(x,y,w,cvgroup,list,i,lambda,...) {
     nm_act_coef_prev = "nobody should call a variable like this"
     
     ## Loop over the grid of Lambdas to get the Post-Lasso predictions
-    for (j in 1:length(lambda)) {
+    for (j in seq_len(length(lambda))) {
       # Get names of active variables at this grid
       nm_act_coef = rownames(act_coef)[act_coef[,j]]
       if (identical(nm_act_coef,character(0)) == TRUE) {

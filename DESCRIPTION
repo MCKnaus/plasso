@@ -2,7 +2,6 @@ Package: plasso
 Type: Package
 Title: Cross-Validated (Post-) Lasso
 Version: 0.1.0
-Date: 2023-07-24
 Authors@R: c(
     person("Glaisner", "Stefan", email = "stefan.glaisner@student.uni-tuebingen.de", role = c("aut","cre")),
     person("Knaus", "Michael C.", email = "michael.knaus@uni-tuebingen.de", role = "ctb", comment = c(ORCID = "0000-0002-7328-1363"))
