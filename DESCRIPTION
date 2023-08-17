@@ -6,9 +6,9 @@ Authors@R: c(
     person("Glaisner", "Stefan", email = "stefan.glaisner@student.uni-tuebingen.de", role = c("aut","cre")),
     person("Knaus", "Michael C.", email = "michael.knaus@uni-tuebingen.de", role = "ctb", comment = c(ORCID = "0000-0002-7328-1363"))
     )
-Description: This package is built on top of the \code{\link[glmnet]{glmnet}} package
-  and estimates coefficient paths for cross-validated least squares
-  Lasso and Post-Lasso models.
+Description: Built on top of the \code{\link[glmnet]{glmnet}} library, the
+  plasso package estimates coefficient paths and cross-validates resulting least
+  squares Lasso and Post-Lasso models.
 License: GPL-3
 Encoding: UTF-8
 URL: https://github.com/stefan-1997/plasso

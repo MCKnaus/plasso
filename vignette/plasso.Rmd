@@ -20,6 +20,9 @@ vignette: >
 
 ```{r, include=FALSE}
 
+rm(list=ls())
+gc()
+
 hook_output <- knitr::knit_hooks$get("output")
 
 knitr::knit_hooks$set(output = function(x, options) {
@@ -63,9 +66,9 @@ The term `plasso` refers to a Post-Lasso model which estimates a least squares a
 
 The package comes with some simulated data representing the following DGP:
 
-The covariates matrix $X$ consists of 25 variables whose effect size one the target $Y$ is defined by the vector $\boldsymbol{\pi} = [1, 0.9, 0.8, ..., 0.1, 0, ..., 0]'$ where the first 10 effects decrease from 1 to 0.1 by 0.1 whereas the remaining ones are zero. The variables in $X$ follow a normal distribution with mean zero while the covariance matrix follows a Toeplitz matrix, which is characterized by having constant diagonals:
+The covariates matrix $X$ consists of 10 variables whose effect size one the target $Y$ is defined by the vector $\boldsymbol{\pi} = [1, -0.83, 0.67, -0.5, 0.33, -0.17, 0, ..., 0]'$ where the first six effect sizes decrease in absolute terms continuously from 1 to 0 and alternate in their sign. The true causal effect of all other covariates is 0. The variables in $X$ follow a normal distribution with mean zero while the covariance matrix follows a Toeplitz matrix, which is characterized by having constant diagonals:
 $$
-\boldsymbol{\Sigma} = \begin{bmatrix} 1 & 0.7 & 0.7^2 & ... & 0.7^{24} \\ 0.7 & 1 & 0.7 & ... & 0.7^{23} \\ 0.7^2 & 0.7 & 1 & ... & 0.7^{22} \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0.7^{24} & 0.7^{23} & 0.7^{22} & ... & 1 \end{bmatrix}
+\boldsymbol{\Sigma} = \begin{bmatrix} 1 & 0.7 & 0.7^2 & ... & 0.7^{9} \\ 0.7 & 1 & 0.7 & ... & 0.7^{8} \\ 0.7^2 & 0.7 & 1 & ... & 0.7^{7} \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0.7^{9} & 0.7^{8} & 0.7^{7} & ... & 1 \end{bmatrix}
 $$
 
 The target $\boldsymbol{y}$ is then a linear transformation of $\boldsymbol{X}$ plus a vector of standard normal random variables. Each element of $\boldsymbol{y}$ is given by:
@@ -85,16 +88,15 @@ X = toeplitz[,-1]
 
 # plasso
 
-`plasso` basically estimates least squares estimates for all lambda values of a standard `glmnet` object. The function's standard output is comparable to the one of a simple `glmnet` output.
+`plasso` returns least squares estimates for all lambda values of a standard `glmnet` object for both a simple Lasso and a Post-Lasso model.
 
 ```{r fitplasso, out.lines=10}
 
 p = plasso::plasso(X,y)
-p
 
 ```
 
-You can plot the coefficient paths for both the Post-Lasso model as well as the underlying 'original' Lasso model.
+You can plot the coefficient paths for both the Post-Lasso model as well as the underlying 'original' Lasso model. This nicely illustrates the difference between the Lasso and Post-Lasso models where the latter is characterized by jumps in its coefficient paths every time a new variable enters the active set.
 
 ```{r plotplasso, error=FALSE, warning=FALSE, message=FALSE}
 
@@ -120,7 +122,7 @@ as.vector(coef_p$lasso)
 
 The `cv.plasso` function uses cross-validation to determine the performance of different values for the `lambda` penalty term for both models (Post-Lasso and Lasso). The returned output of class `cv.plasso` includes the mean squared errors.
 
-When applying the `summary` method and setting the `default` parameter as FALSE, we get some informative output considering the optimal choice of lambda.
+When applying the `summary` method and setting the `default` parameter as FALSE, you can get some informative output considering the optimal choice of lambda.
 
 ```{r fitcvplasso}
 
@@ -129,7 +131,7 @@ summary(p.cv, default=FALSE)
 
 ```
 
-Plot the cross-validated MSE by Lambda value for both models.
+Using the `plot` method extends the basic `glmnet` visualization by the cross-validated MSEs for the Post-Lasso model.
 
 ```{r plotcvplasso, fig.width=7, fig.height=3}
 
@@ -137,17 +139,7 @@ plot(p.cv, legend_pos="left", legend_size=0.5)
 
 ```
 
-Plot the cross-validated MSE by Lambda value for both models.
-
-```{r plotcvglmnet, fig.width=7, fig.height=3}
-
-glm.cv = glmnet::cv.glmnet(X,y)
-
-plot(glm.cv)
-
-```
-
-We can use the following code to get the value of the optimal `lambda` (for the Post-Lasso model) and the coefficients at that value of $\lambda$.
+We can use the following code to get the optimal lambda value (for the Post-Lasso model here) and the associated coefficients at that value of $\lambda$.
 
 ```{r index_min_plasso}
 
