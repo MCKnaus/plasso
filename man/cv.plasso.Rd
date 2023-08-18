@@ -20,7 +20,7 @@ cv.plasso(x, y, w = NULL, kf = 10, parallel = FALSE, ...)
 \item{...}{Pass \code{\link[glmnet]{glmnet}} options}
 }
 \value{
-List object including base \code{\link[glmnet]{glmnet}} object and cross-validation results (incl. optimal Lambda values) for both Lasso and Post-Lasso model.
+cv.plasso object (using a list structure) including the base \code{\link[glmnet]{glmnet}} object and cross-validation results (incl. optimal Lambda values) for both Lasso and Post-Lasso model.
 \item{call}{the call that produced this}
 \item{lasso_full}{base \code{\link[glmnet]{glmnet}} object}
 \item{kf}{number of folds in k-fold cross-validation}

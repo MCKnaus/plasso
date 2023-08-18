@@ -14,7 +14,8 @@
 \item{digits}{Integer, used for number formatting}
 }
 \value{
-Prints cross-validated MSE for both Lasso and Post-Lasso model as well as the number of active variables.
+Prints basic statistics for different lambda values of a fitted \code{\link{plasso}} object,
+i.e. cross-validated MSEs for both Lasso and Post-Lasso model as well as the number of active variables.
 }
 \description{
 Printing main insights from cross-validated (Post-) Lasso model.

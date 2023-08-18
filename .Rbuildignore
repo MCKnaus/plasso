@@ -7,3 +7,4 @@
 ^vignette
 ^dev.R
 ^cran-comments\.md$
+^CRAN-SUBMISSION$

@@ -17,8 +17,8 @@
 List object containing coefficients that are associated with either
 all values along the lambda input sequence or for one specifically given
 lambda value for both the Lasso and Post-Lasso models respectively.
-\item{lasso}{Sparse dgCMatrix with Lasso coefficients}
-\item{plasso}{Sparse dgCMatrix with Post-Lasso coefficients}
+\item{lasso}{Sparse \code{\link[Matrix]{dgCMatrix-class}} object with Lasso coefficients}
+\item{plasso}{Sparse \code{\link[Matrix]{dgCMatrix-class}} object with Post-Lasso coefficients}
 }
 \description{
 Extract coefficients for both Lasso and Post-Lasso from a \code{\link{plasso}} object.

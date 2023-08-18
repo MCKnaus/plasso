@@ -260,8 +260,8 @@ predict.plasso = function(object,
 #' @return List object containing coefficients that are associated with either
 #' all values along the lambda input sequence or for one specifically given
 #' lambda value for both the Lasso and Post-Lasso models respectively.
-#' \item{lasso}{Sparse dgCMatrix with Lasso coefficients}
-#' \item{plasso}{Sparse dgCMatrix with Post-Lasso coefficients}
+#' \item{lasso}{Sparse \code{\link[Matrix]{dgCMatrix-class}} object with Lasso coefficients}
+#' \item{plasso}{Sparse \code{\link[Matrix]{dgCMatrix-class}} object with Post-Lasso coefficients}
 #'
 #' @method coef plasso
 #'
@@ -300,6 +300,8 @@ coef.plasso = function(object,...,s=NULL){
 #' \code{lambda} against the log-lambda sequence,
 #' and \code{dev} against the percent deviance explained.
 #' @param label If TRUE, label the curves with variable sequence numbers
+#' 
+#' @return Produces a coefficient profile plot of the coefficient paths for a fitted \code{\link{plasso}} object.
 #'
 #' @method plot plasso
 #'

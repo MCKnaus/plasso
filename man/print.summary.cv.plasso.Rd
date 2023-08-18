@@ -13,6 +13,9 @@
 
 \item{digits}{Integer, used for number formatting}
 }
+\value{
+Prints information from \code{\link{summary.cv.plasso}} object into console.
+}
 \description{
 Prints summary information of \code{\link{cv.plasso}} object
 }

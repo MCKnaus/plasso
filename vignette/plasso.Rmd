@@ -126,7 +126,7 @@ When applying the `summary` method and setting the `default` parameter as FALSE,
 
 ```{r fitcvplasso}
 
-p.cv = plasso::cv.plasso(X,y,kf=5,parallel=FALSE)
+p.cv = plasso::cv.plasso(X,y,kf=5)
 summary(p.cv, default=FALSE)
 
 ```

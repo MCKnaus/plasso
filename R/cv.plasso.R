@@ -18,7 +18,7 @@
 #' @import iterators
 #' @importFrom stats coef predict var
 #'
-#' @return List object including base \code{\link[glmnet]{glmnet}} object and cross-validation results (incl. optimal Lambda values) for both Lasso and Post-Lasso model.
+#' @return cv.plasso object (using a list structure) including the base \code{\link[glmnet]{glmnet}} object and cross-validation results (incl. optimal Lambda values) for both Lasso and Post-Lasso model.
 #' \item{call}{the call that produced this}
 #' \item{lasso_full}{base \code{\link[glmnet]{glmnet}} object}
 #' \item{kf}{number of folds in k-fold cross-validation}
@@ -99,7 +99,7 @@ cv.plasso = function(x,y,
     
   } else if (parallel)  {
     
-    n_cores <- min(parallel::detectCores()-1,kf)
+    n_cores = min(parallel::detectCores()-1,kf)
     
     cl = parallel::makeCluster(n_cores, methods=FALSE)
     doParallel::registerDoParallel(cl)
@@ -118,9 +118,9 @@ cv.plasso = function(x,y,
     }
     parallel::stopCluster(cl)
     
-    para_res <- as.matrix(do.call(cbind,para_res))
-    cv_MSE_lasso <- t(para_res[,seq_len(kf)])
-    cv_MSE_plasso <- t(para_res[,(kf+1):(2*kf)])
+    para_res = as.matrix(do.call(cbind,para_res))
+    cv_MSE_lasso = t(para_res[,seq_len(kf)])
+    cv_MSE_plasso = t(para_res[,(kf+1):(2*kf)])
     
   }
   
@@ -167,7 +167,8 @@ cv.plasso = function(x,y,
 #' @param ... Pass generic \code{\link[base]{print}} options
 #' @param digits Integer, used for number formatting
 #'
-#' @return Prints cross-validated MSE for both Lasso and Post-Lasso model as well as the number of active variables.
+#' @return Prints basic statistics for different lambda values of a fitted \code{\link{plasso}} object,
+#' i.e. cross-validated MSEs for both Lasso and Post-Lasso model as well as the number of active variables.
 #' 
 #' @method print cv.plasso
 #'
@@ -197,9 +198,9 @@ print.cv.plasso = function(x,...,digits=max(3, getOption("digits")-3)) {
 #' @param ... Pass generic \code{\link[base]{summary}} summary options
 #' @param default TRUE for \code{\link[glmnet]{glmnet}}-like summary output, FALSE for more specific summary information
 #'
-#' @return For specific summary information: List object containing optimal
-#' lambda value and associated MSE for both cross-validated Lasso and
-#' Post-Lasso model.
+#' @return For specific summary information: summary.cv.plasso object (using list structure) containing optimal
+#' lambda values and associated MSEs for both cross-validated Lasso and Post-Lasso model.
+#' For default: \code{\link[base:summary]{summaryDefault}} object.
 #' 
 #' @method summary cv.plasso
 #'
@@ -251,6 +252,8 @@ summary.cv.plasso = function(object,...,default=FALSE) {
 #' @param x Summary of plasso object (either of class \code{\link{summary.cv.plasso}} or \code{\link[base]{summary}})
 #' @param ... Pass generic R \code{\link[base]{print}} options
 #' @param digits Integer, used for number formatting
+#' 
+#' @return Prints information from \code{\link{summary.cv.plasso}} object into console.
 #' 
 #' @method print summary.cv.plasso
 #'
@@ -442,8 +445,8 @@ predict.cv.plasso = function(object,
 #' 
 #' @return List object containing coefficients for both the Lasso and Post-Lasso
 #' models respectively.
-#' \item{lasso}{Sparse dgCMatrix with Lasso coefficients}
-#' \item{plasso}{Sparse dgCMatrix with Post-Lasso coefficients}
+#' \item{lasso}{Sparse \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} with Lasso coefficients}
+#' \item{plasso}{Sparse \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} with Post-Lasso coefficients}
 #'
 #' @method coef cv.plasso
 #'
@@ -479,6 +482,9 @@ coef.cv.plasso = function(object,...,s=c("optimal","all"),se_rule=0){
 #' @param legend_pos Legend position. Only considered for joint plot (lass=FALSE).
 #' @param legend_size Font size of legend
 #' @param lasso If set as True, only the cross-validation curve for the Lasso model is plotted. Default is False.
+#' 
+#' @return Plots the cross-validation curves for both Lasso and Post-Lasso models (incl. upper and lower standard deviation curves)
+#' for a fitted \code{\link{cv.plasso}} object.
 #' 
 #' @method plot cv.plasso
 #'
@@ -542,6 +548,9 @@ plot.cv.plasso = function(x,...,
     # Print legend
     graphics::legend(legend_pos, c("Lasso MSE","Lasso MSE+-1SE","Post-Lasso MSE","Post-Lasso MSE+-1SE","# active coeff."),lty=c(1,2,1,2,1),
                      col=c('blue','blue','red','red','forestgreen'),ncol=1,bty ="n",cex=legend_size)
+    
+    oldpar = graphics::par(no.readonly = TRUE)
+    on.exit(graphics::par(oldpar))
     
     # Open a new graph for number of coefficients to be written on existing
     graphics::par(new=TRUE)

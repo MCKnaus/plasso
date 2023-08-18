@@ -14,9 +14,9 @@
 \item{default}{TRUE for \code{\link[glmnet]{glmnet}}-like summary output, FALSE for more specific summary information}
 }
 \value{
-For specific summary information: List object containing optimal
-lambda value and associated MSE for both cross-validated Lasso and
-Post-Lasso model.
+For specific summary information: summary.cv.plasso object (using list structure) containing optimal
+lambda values and associated MSEs for both cross-validated Lasso and Post-Lasso model.
+For default: \code{\link[base:summary]{summaryDefault}} object.
 }
 \description{
 Summary of cross-validated (Post-) Lasso model.

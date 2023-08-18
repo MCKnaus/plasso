@@ -20,8 +20,8 @@ This argument is not used for \code{s="all"}.}
 \value{
 List object containing coefficients for both the Lasso and Post-Lasso
 models respectively.
-\item{lasso}{Sparse dgCMatrix with Lasso coefficients}
-\item{plasso}{Sparse dgCMatrix with Post-Lasso coefficients}
+\item{lasso}{Sparse \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} with Lasso coefficients}
+\item{plasso}{Sparse \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} with Post-Lasso coefficients}
 }
 \description{
 Extract coefficients for both Lasso and Post-Lasso from a \code{\link{cv.plasso}} object.

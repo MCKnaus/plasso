@@ -24,6 +24,10 @@
 
 \item{lasso}{If set as True, only the cross-validation curve for the Lasso model is plotted. Default is False.}
 }
+\value{
+Plots the cross-validation curves for both Lasso and Post-Lasso models (incl. upper and lower standard deviation curves)
+for a fitted \code{\link{cv.plasso}} object.
+}
 \description{
 Plot of cross-validation curves.
 }

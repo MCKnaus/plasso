@@ -20,6 +20,9 @@ and \code{dev} against the percent deviance explained.}
 
 \item{label}{If TRUE, label the curves with variable sequence numbers}
 }
+\value{
+Produces a coefficient profile plot of the coefficient paths for a fitted \code{\link{plasso}} object.
+}
 \description{
 Plot coefficient paths of (Post-) Lasso model.
 }
