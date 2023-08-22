@@ -1,6 +1,17 @@
 
 # plasso <img src='docs/figures/plasso.png' align="right" height="139" />
 
+<!-- badges: start -->
+
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/plasso)](https://cran.r-project.org/web/packages/plasso/index.html)
+[![license](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![metacran
+downloads](https://cranlogs.r-pkg.org/badges/plasso)](https://cran.r-project.org/web/packages/plasso/index.html)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+<!-- badges: end -->
+
 Built on top of the `glmnet` library by Friedman, Hastie, and Tibshirani
 (2010), the `plasso` package follows Knaus (2022) and comes up with two
 functions that estimate least squares Lasso and Post-Lasso models. The
