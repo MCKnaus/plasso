@@ -10,6 +10,7 @@ Description: Built on top of the 'glmnet' library by Friedman, Hastie and Tibshi
   The plasso() function adds coefficient paths for a Post-Lasso model to the standard 'glmnet' output.
   On top of that cv.plasso() cross-validates the coefficient paths for both the Lasso and Post-Lasso model and provides optimal hyperparameter values for the penalty term lambda.
 License: GPL-3
+VignetteBuilder: knitr
 Encoding: UTF-8
 URL: https://github.com/stefan-1997/plasso
 BugReports: https://github.com/stefan-1997/plasso/issues
@@ -24,5 +25,5 @@ Imports:
   iterators
 RoxygenNote: 7.2.3
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0), knitr, rmarkdown
 Config/testthat/edition: 3
