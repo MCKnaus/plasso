@@ -5,6 +5,5 @@
 ^README.md
 ^README.Rmd
 ^doc
-^vignette
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
