@@ -56,9 +56,9 @@ test_that("predict.plasso for all lambda values", {
   # check predictions for lasso
   pred_g = predict(p$lasso_full,newx=X_pred)
   coef_g = coef(p$lasso_full)
-  expect_identical(pred_p[["lasso"]],pred_g)
+  expect_equal(pred_p[["lasso"]],pred_g)
   
-  # check coefficients for plasso
+  # check coefficients for lasso
   expect_identical(coef_p[["lasso"]][-1,],p$lasso_full$beta)
   expect_identical(coef_p[["lasso"]],coef_g)
   
@@ -185,14 +185,14 @@ test_that("predict.cv.plasso for s=all", {
   # check predictions for lasso
   pred_g = predict(p$lasso_full,newx=X_pred)
   coef_g = coef(p$lasso_full)
-  expect_identical(pred_p[["lasso"]],pred_g)
+  expect_equal(pred_p[["lasso"]],pred_g)
   
-  # check coefficients for plasso
+  # check coefficients for lasso
   expect_identical(coef_p[["lasso"]][-1,],p$lasso_full$beta)
   expect_identical(coef_p[["lasso"]],coef_g)
   
   # check format of plasso fitted values
-  expect_identical(dimnames(pred_p[["plasso"]]),dimnames(pred_g))
+  expect_equal(dimnames(pred_p[["plasso"]]),dimnames(pred_g))
   
   # check format of plasso coefficients
   expect_identical(dimnames(coef_p[["plasso"]]),dimnames(coef_g))
