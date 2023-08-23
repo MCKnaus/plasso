@@ -50,7 +50,7 @@ General dependencies are: `glmnet`, `Matrix`, `methods`, `parallel`, `doParallel
 ```{r startup, eval=FALSE, error=FALSE, warning=FALSE, message=FALSE}
 
 library(devtools)
-devtools::install_github("plasso")
+devtools::install_github("stefan-1997/plasso")
 
 install.packages("plasso")
 
