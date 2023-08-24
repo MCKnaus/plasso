@@ -6,10 +6,11 @@ output: github_document
 # plasso <img src='docs/figures/plasso.png' align="right" height="139" />
 
 <!-- badges: start -->
-[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/plasso)](https://cran.r-project.org/web/packages/plasso/index.html)
-[![license](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
-[![metacran downloads](https://cranlogs.r-pkg.org/badges/plasso)](https://cran.r-project.org/web/packages/plasso/index.html)
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/plasso)](https://CRAN.R-project.org/package=plasso)
+[![License](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![Downloads_Total](https://cranlogs.r-pkg.org/badges/grand-total/plasso)](https://CRAN.R-project.org/package=plasso)
+[![Downloads_Monthly](https://cranlogs.r-pkg.org/badges/plasso)](https://CRAN.R-project.org/package=plasso)
+[![Project_Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 <!-- badges: end -->
 
 Built on top of the `glmnet` library by @glmnet, the `plasso` package follows @knaus and comes up with two functions that estimate least squares Lasso and Post-Lasso models.
