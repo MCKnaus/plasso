@@ -4,7 +4,8 @@
 #' Simulated data from a DGP with an underlying causal relationship between
 #' covariates X and the target y.
 #' The covariates matrix X consists of 10 variables whose effect size on target
-#' y is defined by the vector [1,−0.83,0.67,−0.5,0.33,−0.17,0,...,0]'
+#' y is defined by the vector
+#' \code{c(1, -0.83, 0.67, -0.5, 0.33, -0.17, 0, ..., 0)}
 #' with the first six effect sizes decreasing in absolute terms continuously
 #' from 1 to 0 and alternating in their sign.
 #' The true causal effect of all other covariates is 0.
