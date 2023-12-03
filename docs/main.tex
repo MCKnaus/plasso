@@ -110,13 +110,25 @@ bmargin=2.5cm
 
 \maketitle
 
-This piece of literature is meant as a short overview over the \emph{plasso} package by \citet{plasso}.
+This document is meant as a short overview over the \emph{plasso} package by \citet{plasso}.
 
 \section{General idea}
 
+Built on top of the \emph{glmnet} library by \citet{glmnet}, the \emph{plasso} package follows \citet{knaus} and comes up with two main functions that both estimate least squares Lasso and Post-Lasso models. The \emph{plasso()} function adds coefficient paths for a Post-Lasso model to the \emph{glmnet()} output of a standard Lasso model using the same values for the penalty term lambda.\\
+On top of that, \emph{cv.plasso()} cross-validates all Lasso and Post-Lasso models. The function output includes mean squared errors (MSEs) for all models, and, the most optimal lambda hyperparameter value (according to minimum MSE or alternative definitions such as the one-standard-error-rule).\\
+
+Both functions come with several S3 methods attached. \emph{cv.plasso()} allows for a cross-validation focused \emph{summary} output including the lambda value and the names of the active set at the minimum. Both functions incorporate a \emph{predict} method that can be used for prediction of both fitted values and coefficients - either across the whole lambda sequence or for a specified lambda value. The coefficients can also be obtained by using the \emph{coef} method associated to both functions.\\
+Interesting insights into the models can also be inferred from the \emph{plot} method. For both functions, the \emph{plot} method is quite similar to its respective \emph{glmnet} counterpart. \emph{plasso()} visualises the coefficient paths - either for the Lasso or Post-Lasso model depending on the specification of option \emph{lasso} (default is \emph{FALSE}). \emph{cv.plasso()}, on the other hand, unifies both models by representing the MSEs and number of active coefficients along the whole sequence of lambda values.\\
+
+For an even more comprehensive overview including exemplary code, have a look at the package's \href{https://cran.r-project.org/web/packages/plasso/vignettes/plasso.html}{vignette.}
+
 \section{Technical implementation}
 
+Heretofore, the code is entirely written in R. The first step in both \emph{cv.plasso()} and \emph{plasso()} is a \emph{glmnet()} call for the estimation of the Lasso model and the extraction of the chosen sequence of lambda values. The code is written such as that the Post-Lasso model is newly estimated every time the active set changes. By doing so the computational burden is reduced as we do not have to estimate the Post-Lasso model for the whole lambda sequence.
+
 \section{Contact}
+
+For reporting a bug, simply \href{https://github.com/stefan-1997/NuisanceParameters/issues/new}{open an issue} on GitHub. For personal contact, you can write an email to michael.knaus@uni-tuebingen.de.
 
 \bibliography{ref}
 
