@@ -11,7 +11,7 @@
 <!-- badges: end -->
 
 Built on top of the `glmnet` library by Friedman, Hastie, and Tibshirani
-(2010), the `plasso` package follows Knaus (2022) and comes up with two
+(2010), the `plasso` package follows Knaus (2021) and comes up with two
 functions that estimate least squares Lasso and Post-Lasso models. The
 `plasso()` function adds coefficient paths for a Post-Lasso model to the
 standard `glmnet()` output. On top of that `cv.plasso()` cross-validates
@@ -40,10 +40,9 @@ Descent.” *Journal of Statistical Software* 33 (1): 1–22.
 
 <div id="ref-knaus" class="csl-entry">
 
-Knaus, Michael C. 2022. “<span class="nocase">Double machine
-learning-based programme evaluation under unconfoundedness</span>.” *The
-Econometrics Journal* 25 (3): 602–27.
-<https://doi.org/10.1093/ectj/utac015>.
+Knaus, Michael C. 2021. “<span class="nocase">A double machine learning approach to estimate the effects of musical practice on
+student's skills</span>.” *Journal of the Royal Statistical Society: Series A*,184(1), 282-300.
+<https://doi.org/10.1111/rssa.12623>.
 
 </div>
 
