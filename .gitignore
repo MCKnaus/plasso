@@ -6,3 +6,10 @@ plasso.Rproj
 **/data.R
 **/benchmarking.R
 **/plasso_comparison.R
+^inst/doc$
+^doc$
+^Meta$
+^.*\.Rproj$
+^\.Rproj\.user$
+/doc/
+/Meta/

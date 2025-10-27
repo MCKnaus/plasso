@@ -43,14 +43,14 @@ This notebook provides a detailed overview over the `plasso` package and its two
 
 # Getting started
 
-The very latest version of the package can be installed from its [Github page](https://github.com/stefan-1997/plasso). For the installation you will need the `devtools` package. The latest 'official' version can be installed from CRAN using `install.packages()'. We recommend the latter.
+The very latest version of the package can be installed from its [Github page](https://github.com/MCknaus/plasso). For the installation you will need the `devtools` package. The latest 'official' version can be installed from CRAN using `install.packages()'. We recommend the latter.
 
 General dependencies are: `glmnet`, `Matrix`, `methods`, `parallel`, `doParallel`, `foreach` and `iterators`.
 
 ```{r startup, eval=FALSE, error=FALSE, warning=FALSE, message=FALSE}
 
 library(devtools)
-devtools::install_github("stefan-1997/plasso")
+devtools::install_github("MCKnaus/plasso")
 
 install.packages("plasso")
 
