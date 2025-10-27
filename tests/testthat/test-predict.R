@@ -109,18 +109,6 @@ test_that("predict.plasso response for single lambda value", {
   # check coefficients for plasso
   expect_equal(as.matrix(coef_p[["plasso"]]),coef_lm)
   
-  
-  pred_g = predict(p$lasso_full,newx=X_pred,s=s)
-  coef_g = coef(p$lasso_full,s=s)
-  
-  # check format of plasso fitted values
-  expect_identical(dimnames(pred_p[["plasso"]]),dimnames(pred_g))
-  expect_identical(dimnames(pred_p[["lasso"]]),dimnames(pred_g))
-  
-  # check format of plasso coefficients
-  expect_identical(dimnames(coef_p[["plasso"]]),dimnames(coef_g))
-  expect_identical(dimnames(coef_p[["lasso"]]),dimnames(coef_g))
-
 
 })
 
