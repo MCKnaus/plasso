@@ -1,3 +1,8 @@
+# plasso 0.1.3
+
+* Changed maintainer email
+
+
 # plasso 0.1.2
 
 * Added custom citation

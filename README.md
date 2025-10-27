@@ -21,7 +21,7 @@ provides optimal hyperparameter values for the penalty term lambda.
 ### Bug reports & support
 
 For reporting a bug, simply [open an
-issue](https://github.com/stefan-1997/plasso/issues/new) on GitHub. For
+issue](https://github.com/MCKnaus/plasso/issues/new) on GitHub. For
 personal contact, you can write an email to
 michael.knaus@uni-tuebingen.de.
 
@@ -34,15 +34,15 @@ michael.knaus@uni-tuebingen.de.
 Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2010.
 “Regularization Paths for Generalized Linear Models via Coordinate
 Descent.” *Journal of Statistical Software* 33 (1): 1–22.
-<https://doi.org/10.18637/jss.v033.i01>.
+<doi:10.18637/jss.v033.i01>.
 
 </div>
 
 <div id="ref-knaus" class="csl-entry">
 
 Knaus, Michael C. 2021. “<span class="nocase">A double machine learning approach to estimate the effects of musical practice on
-student's skills</span>.” *Journal of the Royal Statistical Society: Series A*,184(1), 282-300.
-<https://doi.org/10.1111/rssa.12623>.
+student's skills</span>.” *Journal of the Royal Statistical Society: Series A*, 184(1), 282-300.
+<doi:10.1111/rssa.12623>.
 
 </div>
 
