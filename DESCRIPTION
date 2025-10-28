@@ -7,10 +7,10 @@ Authors@R: c(
     person("Stefan", "Glaisner", email = "stefan-glaisner@posteo.de", role = "aut")
     )
 Description: Provides tools for cross-validated Lasso and Post-Lasso estimation.
-  Built on top of the glmnet library by Friedman, Hastie and Tibshirani (2010) <doi:10.18637/jss.v033.i01>,
-  the main function `plasso()` extends the standard glmnet output with coefficient paths
-  for Post-Lasso models, while `cv.plasso()` performs cross-validation for both Lasso
-  and Post-Lasso models and different ways to select the penalty parameter lambda.
+  Built on top of the 'glmnet' package by Friedman, Hastie and Tibshirani (2010) <doi:10.18637/jss.v033.i01>,
+  the main function plasso() extends the standard 'glmnet' output with coefficient paths
+  for Post-Lasso models, while cv.plasso() performs cross-validation for both Lasso
+  and Post-Lasso models and different ways to select the penalty parameter lambda as discussed in Knaus (2021) <doi:10.1111/rssa.12623>.
 License: GPL-3
 VignetteBuilder: knitr
 Encoding: UTF-8
