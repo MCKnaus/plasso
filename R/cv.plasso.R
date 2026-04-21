@@ -139,8 +139,17 @@ cv.plasso = function(x,y,
   
   # Get Lasso coefficients at minimum of Lasso
   coef_min_l = coef_lasso_full[,ind_min_l][which(coef_lasso_full[,ind_min_l] != 0)]
-  # Get Lasso coefficients at minimum of Post-Lasso
-  coef_min_pl = coef_lasso_full[,ind_min_pl][which(coef_lasso_full[,ind_min_pl] != 0)]
+  
+  # Get Lasso coefficients at minimum of Post-Lasso (including zeros)
+  coef_pl_lasso_min = coef_lasso_full[,ind_min_pl]
+  # Add intercept only if it is part of the active set
+  x_pl = x
+  if ("(Intercept)" %in% names_pl) {
+    x_pl = add_intercept(x_pl)
+  }
+  # Get Post-Lasso coefficients at minimum of Post-Lasso
+  coef_min_pl = fit_betas(x_pl,y,w,names_pl,coef_pl_lasso_min)
+  coef_min_pl = coef_min_pl[which(coef_min_pl != 0)]
   
   # Return names and coefficients
   output = list("call"=this.call,
